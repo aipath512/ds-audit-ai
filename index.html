@@ -50,8 +50,8 @@ export default {
         }
       }
 
-      // Fetch ALL files
-      const [robots, llms, aiJson, entities, proof, intents, governance, policy, authority, answerLayer] = await Promise.all([
+      // Fetch ALL your real files
+      const [robots, llms, aiJson, entities, proof, intents, governance, policy, authority, answerLayer, knowledgeGraph, trustState, adn] = await Promise.all([
         fetchFile('/robots.txt'),
         fetchFile('/llms.txt'),
         fetchJSON('/ai.json'),
@@ -61,30 +61,26 @@ export default {
         fetchJSON('/governance.json'),
         fetchJSON('/policy.json'),
         fetchJSON('/authority.json'),
-        fetchJSON('/answer-layer.json')
+        fetchJSON('/answer-layer.json'),
+        fetchJSON('/knowledge-graph.json'),
+        fetchJSON('/trust-state.json'),
+        fetchFile('/adn.json')
       ]);
 
-      // ========== AEO SCORE (REAL - checks intents.json) ==========
+      // ========== AEO SCORE (Based on intents.json + answer-layer.json) ==========
       let aeoScore = 0;
       let aeoTotal = 0;
 
-      aeoTotal += 30;
-      if (intents.exists) aeoScore += 30;
-
-      aeoTotal += 30;
-      if (intents.data && intents.data.primary_intents && intents.data.primary_intents.length > 0) {
-        aeoScore += 30;
-      }
-
-      aeoTotal += 20;
-      if (intents.data && intents.data.routing_hint_for_ai_systems) aeoScore += 20;
-
-      aeoTotal += 20;
-      if (answerLayer.exists) aeoScore += 20;
+      aeoTotal += 20; if (intents.exists) aeoScore += 20;
+      aeoTotal += 20; if (intents.data && intents.data.primary_intents && intents.data.primary_intents.length > 0) aeoScore += 20;
+      aeoTotal += 15; if (intents.data && intents.data.routing_hint_for_ai_systems) aeoScore += 15;
+      aeoTotal += 20; if (answerLayer.exists) aeoScore += 20;
+      aeoTotal += 15; if (answerLayer.data && answerLayer.data.canonical_answers && answerLayer.data.canonical_answers.length > 0) aeoScore += 15;
+      aeoTotal += 10; if (answerLayer.data && answerLayer.data.anti_hallucination_rules) aeoScore += 10;
 
       const aeoFinal = Math.round((aeoScore / aeoTotal) * 100);
 
-      // ========== GEO SCORE ==========
+      // ========== GEO SCORE (Based on llms.txt, ai.json, entities.json, proof.json, authority.json, knowledge-graph.json) ==========
       let geoScore = 0;
       let geoTotal = 0;
 
@@ -94,6 +90,8 @@ export default {
       geoTotal += 15; if (proof.exists) geoScore += 15;
       geoTotal += 10; if (authority.exists) geoScore += 10;
       geoTotal += 10; if (answerLayer.exists) geoScore += 10;
+      geoTotal += 10; if (knowledgeGraph.exists) geoScore += 10;
+      geoTotal += 10; if (aiJson.data && aiJson.data.sameAs && aiJson.data.sameAs.length > 0) geoScore += 10;
 
       const geoFinal = Math.round((geoScore / geoTotal) * 100);
 
@@ -101,10 +99,11 @@ export default {
       let aioScore = 0;
       let aioTotal = 0;
 
-      aioTotal += 25; if (robots.exists) aioScore += 25;
-      aioTotal += 25; if (governance.exists) aioScore += 25;
-      aioTotal += 25; if (policy.exists) aioScore += 25;
-      aioTotal += 25; if (intents.exists) aioScore += 25;
+      aioTotal += 20; if (robots.exists) aioScore += 20;
+      aioTotal += 20; if (governance.exists) aioScore += 20;
+      aioTotal += 20; if (policy.exists) aioScore += 20;
+      aioTotal += 20; if (intents.exists) aioScore += 20;
+      aioTotal += 20; if (knowledgeGraph.exists) aioScore += 20;
 
       const aioFinal = Math.round((aioScore / aioTotal) * 100);
 
@@ -122,11 +121,14 @@ export default {
       let aiSigScore = 0;
       let aiSigTotal = 0;
 
-      aiSigTotal += 20; if (llms.exists) aiSigScore += 20;
-      aiSigTotal += 20; if (aiJson.exists) aiSigScore += 20;
-      aiSigTotal += 20; if (entities.exists) aiSigScore += 20;
-      aiSigTotal += 20; if (proof.exists) aiSigScore += 20;
-      aiSigTotal += 20; if (intents.exists) aiSigScore += 20;
+      aiSigTotal += 15; if (llms.exists) aiSigScore += 15;
+      aiSigTotal += 15; if (aiJson.exists) aiSigScore += 15;
+      aiSigTotal += 15; if (entities.exists) aiSigScore += 15;
+      aiSigTotal += 15; if (proof.exists) aiSigScore += 15;
+      aiSigTotal += 10; if (intents.exists) aiSigScore += 10;
+      aiSigTotal += 10; if (authority.exists) aiSigScore += 10;
+      aiSigTotal += 10; if (knowledgeGraph.exists) aiSigScore += 10;
+      aiSigTotal += 10; if (trustState.exists) aiSigScore += 10;
 
       const aiSignalsFinal = Math.round((aiSigScore / aiSigTotal) * 100);
 
@@ -147,14 +149,19 @@ export default {
         details: {
           intents_json_exists: intents.exists,
           intents_has_primary: intents.data && intents.data.primary_intents ? intents.data.primary_intents.length : 0,
+          answer_layer_exists: answerLayer.exists,
+          answer_layer_has_answers: answerLayer.data && answerLayer.data.canonical_answers ? answerLayer.data.canonical_answers.length : 0,
           llms_txt_exists: llms.exists,
           ai_json_exists: aiJson.exists,
+          ai_json_has_sameAs: aiJson.data && aiJson.data.sameAs ? aiJson.data.sameAs.length : 0,
           entities_json_exists: entities.exists,
           proof_json_exists: proof.exists,
+          authority_json_exists: authority.exists,
+          knowledge_graph_exists: knowledgeGraph.exists,
           governance_json_exists: governance.exists,
           policy_json_exists: policy.exists,
-          authority_json_exists: authority.exists,
-          answer_layer_exists: answerLayer.exists
+          trust_state_exists: trustState.exists,
+          adn_exists: adn.exists
         }
       }, null, 2), {
         headers: {
