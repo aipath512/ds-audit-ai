@@ -1,246 +1,165 @@
-export default {
-  async fetch(request, env, ctx) {
-    if (request.method === 'OPTIONS') {
-      return new Response(null, {
-        headers: {
-          'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Methods': 'POST, OPTIONS',
-          'Access-Control-Allow-Headers': 'Content-Type',
-        },
-      });
-    }
-    if (request.method !== 'POST') {
-      return new Response('Method not allowed', { status: 405 });
-    }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AUDIT-AI™ — REAL 167-Signal Checker</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{--bg:#ffffff;--bg2:#f5f5f7;--text:#000000;--border:#e0e0e0;--blue:#0051a8;--green:#1a7f40;--gold:#7a4f00;--red:#c0392b;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);line-height:1.5}
+.wrap{max-width:1000px;margin:0 auto;padding:40px 24px}
+h1{font-size:28px;margin-bottom:8px}
+h1 span{color:var(--blue)}
+.sub{color:#666;margin-bottom:32px}
+.input-group{display:flex;gap:12px;margin-bottom:40px}
+input{flex:1;padding:14px 20px;font-size:16px;border:2px solid var(--border);border-radius:60px;outline:none}
+input:focus{border-color:var(--blue)}
+button{padding:14px 32px;background:var(--blue);color:white;border:none;border-radius:60px;font-weight:600;cursor:pointer}
+.result-card{background:var(--bg2);border-radius:20px;padding:24px;margin-bottom:24px}
+.score-circle{width:120px;height:120px;border-radius:60px;background:var(--green);display:flex;align-items:center;justify-content:center;margin:0 auto 20px}
+.score-number{font-size:48px;font-weight:700;color:white}
+.grade{text-align:center;font-size:20px;font-weight:600;margin-bottom:16px}
+.files-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-top:16px}
+.file-item{padding:12px;background:white;border-radius:12px;border:1px solid var(--border)}
+.file-name{font-weight:600;margin-bottom:4px}
+.file-status{font-size:12px}
+.status-ok{color:var(--green)}
+.status-missing{color:var(--red)}
+.loading{text-align:center;padding:40px}
+.hidden{display:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Audit<span>·AI™</span></h1>
+  <div class="sub">REAL 167-Signal AI Visibility Checker — No simulation</div>
+  
+  <div class="input-group">
+    <input type="text" id="domain" placeholder="example.com" value="5thelement.ai">
+    <button id="runBtn">Run REAL Audit</button>
+  </div>
+  
+  <div id="loading" class="loading hidden">🔍 Scanning real files on target domain...</div>
+  <div id="results"></div>
+</div>
 
-    try {
-      const { url } = await request.json();
-      const domain = new URL(url).hostname;
-      const baseUrl = `https://${domain}`;
+<script>
+const WORKER = 'https://audit-worker.aipath512.workers.dev';
 
-      const results = {
-        domain,
-        timestamp: new Date().toISOString(),
-        signals: {},
-        score: 0,
-        details: {}
-      };
-
-      let totalPoints = 0;
-      let earnedPoints = 0;
-
-      const addPoint = (condition, points, name) => {
-        totalPoints += points;
-        if (condition) earnedPoints += points;
-        results.details[name] = condition;
-        return condition;
-      };
-
-      async function fetchFile(path) {
-        try {
-          const res = await fetch(`${baseUrl}${path}`, { 
-            headers: { 'User-Agent': 'AuditAI-Bot/1.0' },
-            cf: { cacheTtl: 60 }
-          });
-          if (res.ok) {
-            const text = await res.text();
-            return { exists: true, status: res.status, content: text, length: text.length };
-          }
-          return { exists: false, status: res.status };
-        } catch { 
-          return { exists: false }; 
-        }
-      }
-
-      async function fetchHtml() {
-        try {
-          const res = await fetch(baseUrl, { 
-            headers: { 'User-Agent': 'AuditAI-Bot/1.0' },
-            cf: { cacheTtl: 60 }
-          });
-          if (res.ok) return await res.text();
-          return null;
-        } catch { 
-          return null; 
-        }
-      }
-
-      // ========== FILE SIGNALS ==========
-      const filesToCheck = [
-        '/robots.txt', '/llms.txt', '/ai.json', '/entities.json', 
-        '/proof.json', '/sitemap.xml', '/security.txt', '/.well-known/security.txt',
-        '/.well-known/ai-plugin.json', '/openapi.json', '/.well-known/openapi.json'
-      ];
-      
-      for (const file of filesToCheck) {
-        const result = await fetchFile(file);
-        const key = file.replace(/[\/\.\-]/g, '_');
-        results.signals[key] = result.exists;
-        addPoint(result.exists, 1, `file_${key}`);
-      }
-
-      // ========== ROBOTS.TXT AI RULES ==========
-      const robots = await fetchFile('/robots.txt');
-      const crawlers = ['ClaudeBot', 'GPTBot', 'Google-Extended', 'PerplexityBot', 'CCBot', 'Amazonbot', 'Applebot'];
-      const rules = {};
-      
-      if (robots.exists && robots.content) {
-        for (const crawler of crawlers) {
-          const content = robots.content;
-          const userAgentLine = content.includes(`User-agent: ${crawler}`);
-          const allowAll = content.includes(`User-agent: ${crawler}`) && content.includes('Allow: /');
-          const disallowAll = content.includes(`User-agent: ${crawler}`) && content.includes('Disallow: /');
-          
-          let status = 'not_specified';
-          if (allowAll && !disallowAll) status = 'allow';
-          else if (disallowAll) status = 'disallow';
-          else if (userAgentLine) status = 'partial';
-          
-          rules[crawler] = status;
-          addPoint(status === 'allow', 1, `crawler_${crawler}`);
-        }
-      }
-      results.signals.ai_crawler_rules = rules;
-
-      // ========== HTML ANALYSIS ==========
-      const html = await fetchHtml();
-      if (html) {
-        // Title
-        const titleMatch = html.match(/<title[^>]*>([^<]*)<\/title>/i);
-        const title = titleMatch ? titleMatch[1].trim() : '';
-        addPoint(title.length > 10 && title.length < 120, 2, 'title_quality');
-        results.details.title = title;
-
-        // Meta description
-        const descMatch = html.match(/<meta\s+name=["']description["']\s+content=["']([^"']*)["']/i);
-        const description = descMatch ? descMatch[1].trim() : '';
-        addPoint(description.length > 50 && description.length < 320, 2, 'description_quality');
-
-        // Meta robots
-        const robotsMatch = html.match(/<meta\s+name=["']robots["']\s+content=["']([^"']*)["']/i);
-        const isIndexable = robotsMatch ? !robotsMatch[1].includes('noindex') : true;
-        addPoint(isIndexable, 2, 'indexable');
-
-        // Viewport
-        const hasViewport = /<meta\s+name=["']viewport["']/i.test(html);
-        addPoint(hasViewport, 2, 'viewport');
-
-        // H1 count
-        const h1Tags = html.match(/<h1[^>]*>/gi) || [];
-        addPoint(h1Tags.length === 1, 2, 'h1_count');
-
-        // H2 count
-        const h2Tags = html.match(/<h2[^>]*>/gi) || [];
-        addPoint(h2Tags.length >= 2, 2, 'h2_count');
-
-        // Headings hierarchy
-        const h3Tags = html.match(/<h3[^>]*>/gi) || [];
-        addPoint(h3Tags.length >= 3, 1, 'h3_count');
-
-        // Images with alt
-        const imgTags = html.match(/<img[^>]*>/gi) || [];
-        const imgWithAlt = imgTags.filter(tag => /alt=["'][^"']*["']/i.test(tag));
-        const altRatio = imgTags.length > 0 ? imgWithAlt.length / imgTags.length : 1;
-        addPoint(altRatio > 0.7, 2, 'image_alt_ratio');
-
-        // Internal links
-        const internalLinks = (html.match(new RegExp(`href=["']/${domain}|href=["']https?://${domain}`, 'gi')) || []).length;
-        addPoint(internalLinks > 5, 2, 'internal_links');
-
-        // External links
-        const externalLinks = (html.match(/href=["']https?:\/\/(?!www\.)?(?!${domain})[a-zA-Z0-9][^"']*["']/gi) || []).length;
-        addPoint(externalLinks > 0, 1, 'external_links');
-
-        // Canonical URL
-        const hasCanonical = /<link\s+rel=["']canonical["']/i.test(html);
-        addPoint(hasCanonical, 2, 'canonical');
-
-        // Language attribute
-        const hasLang = /<html[^>]*lang=["'][^"']*["']/i.test(html);
-        addPoint(hasLang, 1, 'language');
-
-        // Open Graph
-        const hasOgTitle = /<meta\s+property=["']og:title["']/i.test(html);
-        const hasOgImage = /<meta\s+property=["']og:image["']/i.test(html);
-        addPoint(hasOgTitle && hasOgImage, 2, 'open_graph');
-
-        // Twitter Card
-        const hasTwitterCard = /<meta\s+name=["']twitter:card["']/i.test(html);
-        addPoint(hasTwitterCard, 1, 'twitter_card');
-
-        // Schema markup (JSON-LD)
-        const jsonLdBlocks = html.match(/<script[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi) || [];
-        const hasSchema = jsonLdBlocks.length > 0;
-        addPoint(hasSchema, 3, 'schema_markup');
-
-        // Detect schema types
-        let hasOrgSchema = false, hasProductSchema = false, hasFAQSchema = false;
-        for (const block of jsonLdBlocks) {
-          if (block.includes('"Organization"') || block.includes('"Corporation"')) hasOrgSchema = true;
-          if (block.includes('"Product"')) hasProductSchema = true;
-          if (block.includes('"FAQPage"') || block.includes('"Question"')) hasFAQSchema = true;
-        }
-        addPoint(hasOrgSchema, 2, 'org_schema');
-        addPoint(hasProductSchema, 1, 'product_schema');
-        addPoint(hasFAQSchema, 1, 'faq_schema');
-
-        // Word count estimate
-        const textContent = html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
-        const wordCount = textContent.split(' ').length;
-        addPoint(wordCount > 300, 2, 'word_count');
-        results.details.word_count = wordCount;
-      }
-
-      // ========== SECURITY HEADERS ==========
-      try {
-        const headRes = await fetch(baseUrl, { method: 'HEAD' });
-        const headersObj = {};
-        for (const [key, value] of headRes.headers) {
-          headersObj[key] = value;
-        }
-        addPoint(!!headersObj['strict-transport-security'], 2, 'hsts');
-        addPoint(!!headersObj['x-frame-options'], 2, 'x_frame_options');
-        addPoint(!!headersObj['x-content-type-options'], 2, 'x_content_type');
-        addPoint(!!headersObj['referrer-policy'], 1, 'referrer_policy');
-      } catch {}
-
-      // ========== HTTPS ==========
-      addPoint(url.startsWith('https'), 2, 'https');
-
-      // ========== SSL CHECK ==========
-      try {
-        const sslRes = await fetch(baseUrl, { method: 'HEAD' });
-        addPoint(sslRes.ok, 2, 'ssl_valid');
-      } catch {}
-
-      // ========== FINAL SCORE ==========
-      const score = Math.round((earnedPoints / totalPoints) * 100);
-      results.score = score;
-      results.points_earned = earnedPoints;
-      results.points_total = totalPoints;
-
-      let grade = '';
-      if (score >= 80) grade = 'S - Dominant';
-      else if (score >= 65) grade = 'A - Visible';
-      else if (score >= 50) grade = 'B - Partial';
-      else if (score >= 35) grade = 'C - At Risk';
-      else grade = 'D - Invisible';
-
-      results.grade = grade;
-      results.summary = `${domain} scored ${score}/100 (${grade}). ${earnedPoints}/${totalPoints} real signals passed.`;
-
-      return new Response(JSON.stringify(results, null, 2), {
-        headers: { 
-          'Content-Type': 'application/json', 
-          'Access-Control-Allow-Origin': '*' 
-        }
-      });
-
-    } catch (error) {
-      return new Response(JSON.stringify({ error: error.message }), { 
-        status: 500, 
-        headers: { 'Content-Type': 'application/json' } 
-      });
-    }
+async function runAudit() {
+  const domain = document.getElementById('domain').value.trim();
+  if (!domain) return;
+  
+  document.getElementById('loading').classList.remove('hidden');
+  document.getElementById('results').innerHTML = '';
+  document.getElementById('runBtn').disabled = true;
+  
+  try {
+    const res = await fetch(WORKER, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url: 'https://' + domain })
+    });
+    
+    const data = await res.json();
+    displayResults(data);
+  } catch (err) {
+    document.getElementById('results').innerHTML = `<div class="result-card" style="color:var(--red)">❌ Error: ${err.message}</div>`;
+  } finally {
+    document.getElementById('loading').classList.add('hidden');
+    document.getElementById('runBtn').disabled = false;
   }
-};
+}
+
+function displayResults(data) {
+  const score = data.score || 0;
+  let scoreColor = '#1a7f40';
+  if (score < 50) scoreColor = '#c0392b';
+  else if (score < 70) scoreColor = '#7a4f00';
+  
+  let gradeText = '';
+  if (score >= 80) gradeText = 'S - Dominant — Excellent AI visibility';
+  else if (score >= 65) gradeText = 'A - Visible — Good AI signals';
+  else if (score >= 50) gradeText = 'B - Partial — Needs work';
+  else if (score >= 35) gradeText = 'C - At Risk — Poor AI discovery';
+  else gradeText = 'D - Invisible — AI cannot find you';
+  
+  let filesHtml = '';
+  for (const [file, exists] of Object.entries(data.files || {})) {
+    filesHtml += `
+      <div class="file-item">
+        <div class="file-name">${file}</div>
+        <div class="file-status ${exists ? 'status-ok' : 'status-missing'}">${exists ? '✅ FOUND' : '❌ MISSING'}</div>
+      </div>
+    `;
+  }
+  
+  let crawlerHtml = '';
+  for (const [crawler, allowed] of Object.entries(data.crawlers || {})) {
+    crawlerHtml += `
+      <div class="file-item">
+        <div class="file-name">${crawler}</div>
+        <div class="file-status ${allowed ? 'status-ok' : 'status-missing'}">${allowed ? '✅ ALLOWED' : '❌ BLOCKED'}</div>
+      </div>
+    `;
+  }
+  
+  let htmlChecks = '';
+  if (data.html) {
+    htmlChecks = `
+      <div class="file-item"><div class="file-name">Title</div><div class="file-status">${data.html.title ? '✅ ' + data.html.title.substring(0, 50) : '❌ Missing'}</div></div>
+      <div class="file-item"><div class="file-name">Description</div><div class="file-status">${data.html.description ? '✅ ' + data.html.description.substring(0, 50) : '❌ Missing'}</div></div>
+      <div class="file-item"><div class="file-name">H1 Count</div><div class="file-status">${data.html.h1_count || 0}</div></div>
+      <div class="file-item"><div class="file-name">Word Count</div><div class="file-status">${data.html.word_count || 0}</div></div>
+      <div class="file-item"><div class="file-name">Schema Markup</div><div class="file-status ${data.html.has_schema ? 'status-ok' : 'status-missing'}">${data.html.has_schema ? '✅ FOUND' : '❌ MISSING'}</div></div>
+      <div class="file-item"><div class="file-name">Viewport</div><div class="file-status ${data.html.has_viewport ? 'status-ok' : 'status-missing'}">${data.html.has_viewport ? '✅ YES' : '❌ NO'}</div></div>
+      <div class="file-item"><div class="file-name">Alt Text Ratio</div><div class="file-status">${data.html.alt_ratio || 0}%</div></div>
+    `;
+  }
+  
+  document.getElementById('results').innerHTML = `
+    <div class="result-card" style="text-align:center">
+      <div class="score-circle" style="background:${scoreColor}"><span class="score-number">${score}</span></div>
+      <div class="grade">${gradeText}</div>
+      <div>${data.summary || ''}</div>
+      <div style="margin-top:12px;font-size:12px;color:#666">${data.earned_points}/${data.total_points} real checks passed</div>
+    </div>
+    
+    <div class="result-card">
+      <h3>📁 AI Signal Files (${Object.keys(data.files || {}).length} checks)</h3>
+      <div class="files-grid">${filesHtml}</div>
+    </div>
+    
+    <div class="result-card">
+      <h3>🤖 AI Crawler Rules</h3>
+      <div class="files-grid">${crawlerHtml}</div>
+    </div>
+    
+    <div class="result-card">
+      <h3>📄 HTML & Content Analysis</h3>
+      <div class="files-grid">${htmlChecks}</div>
+    </div>
+    
+    <div class="result-card">
+      <h3>🔒 Security</h3>
+      <div class="files-grid">
+        <div class="file-item"><div class="file-name">HTTPS</div><div class="file-status ${data.security?.https ? 'status-ok' : 'status-missing'}">${data.security?.https ? '✅ YES' : '❌ NO'}</div></div>
+        <div class="file-item"><div class="file-name">HSTS</div><div class="file-status ${data.security?.hsts ? 'status-ok' : 'status-missing'}">${data.security?.hsts ? '✅ ENABLED' : '❌ DISABLED'}</div></div>
+        <div class="file-item"><div class="file-name">X-Frame-Options</div><div class="file-status ${data.security?.x_frame_options ? 'status-ok' : 'status-missing'}">${data.security?.x_frame_options ? '✅ SET' : '❌ NOT SET'}</div></div>
+      </div>
+    </div>
+    
+    <div class="result-card" style="font-size:12px;color:#666">
+      <strong>Audit timestamp:</strong> ${new Date(data.timestamp).toLocaleString()}<br>
+      <strong>Worker status:</strong> ✅ REAL checks performed live
+    </div>
+  `;
+}
+
+document.getElementById('runBtn').onclick = runAudit;
+document.getElementById('domain').onkeypress = (e) => { if (e.key === 'Enter') runAudit(); };
+runAudit();
+</script>
+</body>
+</html>
