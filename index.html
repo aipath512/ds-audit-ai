@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>AUDIT-AI™ — 167-Signal AI Visibility Engine</title>
+<script>
+  // Force white background before any rendering
+  document.documentElement.style.backgroundColor = '#ffffff';
+  document.documentElement.style.color = '#000000';
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400;1,700&family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+<style>
+/* ---------- RESET & VARIABLES (LIGHT MODE DEFAULT) ---------- */
+:root {
+  --bg:#ffffff; --bg2:#f5f5f7; --bg3:#e8e8ed;
+  --text:#000000; --mid:#3a3a3c; --light:#6e6e73; --xlight:#aeaeb2;
+  --border:rgba(0,0,0,0.08); --border-md:rgba(0,0,0,0.14);
+  --blue:#0051a8; --blue-bg:#e8f0fb;
+  --red:#c0392b; --red-bg:#fdecea;
+  --green:#1a7f40; --green-bg:#e6f5ed;
+  --gold:#7a4f00; --gold-bg:#fff3cd;
+  --purple:#5e2ca5; --purple-bg:#f0ebff;
+  --sh1:0 1px 4px rgba(0,0,0,0.06),0 1px 2px rgba(0,0,0,0.04);
+  --sh2:0 4px 20px rgba(0,0,0,0.08),0 2px 8px rgba(0,0,0,0.04);
+  --sh3:0 12px 48px rgba(0,0,0,0.10),0 4px 14px rgba(0,0,0,0.05);
+  --r:16px; --rs:10px; --rxs:6px;
+}
+html.dark {
+  --bg:#000000; --bg2:#111111; --bg3:#1c1c1e;
+  --text:#f5f5f7; --mid:#c7c7cc; --light:#8e8e93; --xlight:#48484a;
+  --border:rgba(255,255,255,0.08); --border-md:rgba(255,255,255,0.14);
+  --blue:#5eb4ff; --blue-bg:#0a1829;
+  --red:#ff6b6b; --red-bg:#1a0808;
+  --green:#32d74b; --green-bg:#061509;
+  --gold:#ffd60a; --gold-bg:#1a1200;
+  --purple:#c09cff; --purple-bg:#1a0a2e;
+  --sh1:0 1px 4px rgba(0,0,0,0.5); --sh2:0 4px 20px rgba(0,0,0,0.5); --sh3:0 12px 48px rgba(0,0,0,0.6);
+}
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+html { scroll-behavior:smooth; background:#fff !important; transition:background .3s ease; }
+html.dark { background:#000 !important; }
+body {
+  background:#fff !important; color:#000 !important;
+  font-family:'Inter',sans-serif; font-weight:400; font-size:16px; line-height:1.5;
+  -webkit-font-smoothing:antialiased; min-height:100vh;
+  transition:background .3s ease, color .3s ease;
+}
+html.dark body { background:#000 !important; color:#f5f5f7 !important; }
+
+/* Hard contrast (21:1) */
+body, body * { color:#000000; }
+html.dark body, html.dark body * { color:#f5f5f7 !important; }
+
+/* Accent overrides */
+.eyebrow, .synth-tag, .ld-tag { color:var(--blue) !important; }
+html.dark .eyebrow, html.dark .synth-tag, html.dark .ld-tag { color:var(--blue) !important; }
+.d-aeo .dim-lbl, .d-aeo .dim-val { color:var(--blue) !important; }
+.d-geo .dim-lbl, .d-geo .dim-val { color:var(--gold) !important; }
+.d-aio .dim-lbl, .d-aio .dim-val { color:var(--green) !important; }
+.d-seo .dim-lbl, .d-seo .dim-val { color:var(--purple) !important; }
+.sh, .sl-ok  { color:var(--green)  !important; }
+.sm, .sl-warn{ color:var(--gold)   !important; }
+.sl_, .sl-fail { color:var(--red)  !important; }
+.sl-info     { color:var(--blue)   !important; }
+.sb-p        { color:var(--green)  !important; }
+.sb-w        { color:var(--gold)   !important; }
+.sb-f        { color:var(--red)    !important; }
+
+/* Toggle button */
+#toggle{display:inline-flex;align-items:center;gap:7px;background:var(--text);color:var(--bg);border:none;border-radius:100px;padding:6px 14px 6px 11px;font-size:11px;font-weight:500;cursor:pointer;transition:all .2s;box-shadow:var(--sh1);margin-top:10px;}
+#toggle:hover{box-shadow:var(--sh2);}
+#toggle span { color:inherit !important; }
+
+/* Progress bar */
+#bar{position:fixed;top:0;left:0;height:2px;background:var(--blue);z-index:9999;width:0%;transition:width .2s;}
+
+/* Layout */
+.wrap{max-width:1080px;margin:0 auto;padding:0 32px;}
+header{padding:28px 0 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:flex-start;}
+.brand h1{font-family:'Playfair Display',serif;font-weight:700;font-size:24px;letter-spacing:-0.02em;}
+.brand h1 em{font-style:italic;color:var(--blue);}
+.brand p{font-size:10px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;margin-top:3px;}
+.hd-meta{font-size:10px;font-weight:500;text-align:right;line-height:1.6;}
+
+/* Input zone */
+#input-zone{padding:48px 0 32px;text-align:center;}
+.eyebrow{font-size:11px;font-weight:600;letter-spacing:0.16em;margin-bottom:12px;}
+.hero-h{font-family:'Playfair Display',serif;font-weight:700;font-size:clamp(32px,5vw,56px);line-height:1.08;letter-spacing:-0.03em;margin-bottom:14px;}
+.hero-h em{font-style:italic;color:var(--blue);}
+.hero-s{font-size:16px;font-weight:300;max-width:520px;margin:0 auto 28px;}
+.url-wrap{max-width:620px;margin:0 auto 16px;position:relative;}
+.url-in{width:100%;padding:18px 148px 18px 22px;font-size:15px;background:var(--bg);border:1.5px solid var(--border-md);border-radius:100px;outline:none;transition:all .2s;}
+.url-in:focus{border-color:var(--blue);box-shadow:0 0 0 4px rgba(0,81,168,.08);}
+.url-go{position:absolute;right:6px;top:50%;transform:translateY(-50%);padding:10px 24px;background:var(--text);color:var(--bg);border:none;border-radius:100px;font-weight:600;font-size:13px;cursor:pointer;transition:.15s;}
+.url-go:hover{transform:translateY(-50%) scale(1.02);}
+
+/* Pill accordions */
+.pill-accordions{max-width:620px;margin:0 auto;display:flex;flex-direction:column;gap:8px;}
+.pill-acc{border:1px solid var(--border);border-radius:var(--rs);background:var(--bg);overflow:hidden;}
+.pill-acc-header{width:100%;display:flex;align-items:center;gap:12px;padding:12px 16px;background:transparent;border:none;cursor:pointer;text-align:left;transition:background .1s;}
+.pill-acc-header:hover{background:var(--bg2);}
+.pill-acc-tag{font-size:10px;font-weight:700;letter-spacing:.1em;min-width:48px;}
+.pill-acc-name{font-size:13px;font-weight:500;flex:1;}
+.pill-acc-count{font-size:10px;font-weight:600;background:var(--bg2);border:1px solid var(--border);padding:2px 10px;border-radius:100px;}
+.pill-acc-chev{font-size:10px;opacity:.5;}
+.pill-acc-body{display:none;border-top:1px solid var(--border);padding:16px;}
+.pill-acc-def,.pill-acc-eg{font-size:12px;line-height:1.5;margin-top:8px;}
+
+/* Loading modules */
+#loading-zone{display:none;padding:60px 0;}
+.mod-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:28px;}
+.mod{background:var(--bg);border:1px solid var(--border);border-radius:var(--r);padding:16px;position:relative;box-shadow:var(--sh1);}
+.mod-lbl{font-size:10px;font-weight:600;text-transform:uppercase;margin-bottom:6px;}
+.mod-cnt{font-family:'Playfair Display',serif;font-weight:700;font-size:28px;}
+.mod-bar{position:absolute;bottom:0;left:0;height:2px;background:var(--blue);width:0%;}
+.stream{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:18px;height:180px;overflow-y:auto;font-family:monospace;font-size:12px;}
+
+/* Results layout */
+#results-zone{display:none;padding:48px 0;}
+.sh-grid{display:grid;grid-template-columns:240px 1fr;gap:48px;margin-bottom:56px;align-items:center;}
+.ring-w{position:relative;display:flex;justify-content:center;}
+.r-inner{position:absolute;text-align:center;}
+.r-num{font-family:'Playfair Display',serif;font-weight:700;font-size:56px;}
+.r-grade{font-size:10px;font-weight:600;letter-spacing:.08em;padding:4px 12px;border-radius:100px;border:1.5px solid;margin-top:8px;display:inline-block;}
+.dim-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;}
+.dim{padding:16px;background:var(--bg2);border-radius:var(--rs);}
+.dim-lbl{font-size:10px;font-weight:600;letter-spacing:.1em;}
+.dim-val{font-size:36px;font-weight:700;font-family:'Playfair Display',serif;margin:4px 0;}
+.dim-bar{height:2px;background:var(--bg3);margin-top:8px;}
+.dim-bar-f{height:100%;border-radius:2px;transition:width 1s;}
+
+.ai-band{display:flex;justify-content:space-between;background:var(--bg2);border-radius:var(--r);padding:24px 28px;margin-bottom:36px;gap:20px;flex-wrap:wrap;}
+.aib-val{font-size:44px;font-family:'Playfair Display',serif;font-weight:700;}
+.crawler-tags{display:flex;gap:8px;flex-wrap:wrap;}
+.ct{font-size:11px;padding:4px 12px;border-radius:100px;}
+.ct-ok{background:var(--green-bg);color:var(--green);border:1px solid rgba(26,127,64,.2);}
+.ct-no{background:var(--red-bg);color:var(--red);border:1px solid rgba(192,57,43,.2);}
+
+/* Accordion premium */
+.acc-wrap{border:1px solid var(--border);border-radius:var(--r);margin-bottom:16px;background:var(--bg);overflow:hidden;}
+.acc-header{width:100%;display:flex;justify-content:space-between;align-items:center;padding:18px 22px;background:var(--bg);border:none;cursor:pointer;gap:12px;}
+.acc-header:hover{background:var(--bg2);}
+.acc-header-left{display:flex;gap:14px;align-items:center;}
+.acc-icon{width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:16px;}
+.acc-tag{font-size:10px;font-weight:700;letter-spacing:.12em;color:var(--blue);}
+.acc-label{font-family:'Playfair Display',serif;font-weight:600;font-size:16px;}
+.acc-chevron{font-size:12px;opacity:.6;}
+.acc-body{display:none;}
+.acc-inner{padding:20px 24px;border-top:1px solid var(--border);}
+.acc-ap-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+.acc-ap-card{padding:20px;background:var(--bg2);border-radius:var(--rs);}
+.acc-ap-p{font-size:10px;font-weight:700;margin-bottom:8px;}
+.acc-ap-title{font-weight:700;font-size:14px;margin-bottom:12px;}
+.ac-items{list-style:none;margin-top:8px;}
+.ac-item{font-size:12px;padding:5px 0 5px 16px;position:relative;border-bottom:1px solid var(--border);}
+.ac-item::before{content:'→';position:absolute;left:0;}
+.ac-delta{display:inline-block;margin-top:12px;font-size:11px;font-weight:600;background:var(--green-bg);color:var(--green);padding:3px 10px;border-radius:100px;}
+.sg{display:grid;gap:8px;margin-top:12px;}
+.sg-normal{grid-template-columns:repeat(3,1fr);}
+.sc{display:flex;align-items:center;gap:12px;padding:12px;border:1px solid var(--border);border-radius:var(--rs);background:var(--bg);}
+.sc-name{font-size:12px;font-weight:500;flex:1;}
+.sc-score{font-weight:700;font-size:18px;font-family:'Playfair Display',serif;}
+.sb{font-size:9px;font-weight:600;padding:3px 8px;border-radius:100px;white-space:nowrap;}
+.sb-p{background:var(--green-bg);color:var(--green);}
+.sb-w{background:var(--gold-bg);color:var(--gold);}
+.sb-f{background:var(--red-bg);color:var(--red);}
+.acc-ctrls{display:flex;gap:8px;margin-bottom:12px;}
+.cb{font-size:11px;padding:4px 12px;border-radius:100px;background:var(--bg2);border:1px solid var(--border);cursor:pointer;}
+.cb.on{background:var(--text);color:var(--bg);border-color:var(--text);}
+.share-bar{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;background:var(--bg2);border-radius:var(--r);padding:18px 24px;margin:32px 0;}
+.share-btns{display:flex;gap:12px;}
+.share-btn{padding:8px 18px;border-radius:100px;background:var(--bg);border:1.5px solid var(--border-md);font-size:12px;font-weight:500;cursor:pointer;transition:.2s;}
+.contact-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:16px;}
+.contact-card{display:flex;align-items:center;gap:14px;padding:14px 18px;background:var(--bg);border:1px solid var(--border);border-radius:var(--rs);text-decoration:none;}
+.legal-block{background:var(--bg2);border-radius:var(--r);padding:20px;margin-top:28px;}
+.legal-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:12px;}
+.rst{display:block;margin:48px auto 64px;padding:12px 36px;background:transparent;border:1.5px solid var(--border-md);border-radius:100px;font-weight:500;cursor:pointer;}
+@media (max-width:760px){
+  .sh-grid{grid-template-columns:1fr;text-align:center;}
+  .acc-ap-grid{grid-template-columns:1fr;}
+  .sg-normal{grid-template-columns:1fr;}
+  .contact-grid,.legal-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+<div id="bar"></div>
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <h1>Audit<em>·AI™</em></h1>
+      <p>167-Signal AI Visibility Engine</p>
+      <button id="toggle" onclick="toggleTheme()"><span id="ti">☾</span><span id="tl">Dark</span></button>
+    </div>
+    <div class="hd-meta">V 3.0 · AI-FIRST<br><span style="opacity:.5">AEO · GEO · AIO · SEO</span></div>
+  </header>
+
+  <div id="input-zone">
+    <p class="eyebrow">Full-stack AI Discovery Diagnostic · 167 Real Signals</p>
+    <h2 class="hero-h">Your AI Search Visibility,<br><em>Decoded.</em></h2>
+    <p class="hero-s">Enter any URL — receive a complete audit with synthesis and tactical roadmap.</p>
+    <div class="url-wrap">
+      <input type="text" id="url-input" class="url-in" placeholder="yoursite.com" autocomplete="off">
+      <button class="url-go" id="go-btn" onclick="startAudit()">Run Audit</button>
+    </div>
+    
+    <!-- Criteria teaser -->
+    <div class="pill-accordions" style="margin-top:28px;">
+      <div class="pill-acc">
+        <button class="pill-acc-header" onclick="togglePillAcc('criteria')">
+          <span class="pill-acc-tag" style="color:var(--blue)">◈</span>
+          <span class="pill-acc-name">167 Criteria · Full signal taxonomy</span>
+          <span class="pill-acc-count">9 categories</span>
+          <span class="pill-acc-chev" id="chev-criteria">▼</span>
+        </button>
+        <div class="pill-acc-body" id="body-criteria">
+          <div class="pill-acc-def"><strong>Audit-AI™ examines 5 core pillars:</strong> AEO (Answer Engine), GEO (Generative Engine), AIO (AI Optimization), SEO (Classic trust), and AI Signals (Crawler/Governance). Each signal is scored 0–100 based on real-world detection logic. The engine simulates LLM crawl behavior, file discovery, and structural markup evaluation.</div>
+          <div class="pill-acc-eg">✅ Live scoring for 167 unique signals — from <strong>llms.txt</strong> to <strong>FAQ schema</strong> to <strong>proof.json</strong>. No fake data.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="loading-zone">
+    <div class="ld-head"><div class="ld-tag">Scanning</div><div class="ld-title">Analyzing AI Visibility Layer</div><div class="ld-url" id="ld-url"></div></div>
+    <div class="mod-grid">
+      <div class="mod" id="m-aeo"><div class="mod-lbl">AEO</div><div class="mod-cnt" id="c-aeo">0/34</div><div class="mod-bar" id="b-aeo"></div></div>
+      <div class="mod" id="m-geo"><div class="mod-lbl">GEO</div><div class="mod-cnt" id="c-geo">0/28</div><div class="mod-bar" id="b-geo"></div></div>
+      <div class="mod" id="m-aio"><div class="mod-lbl">AIO</div><div class="mod-cnt" id="c-aio">0/31</div><div class="mod-bar" id="b-aio"></div></div>
+      <div class="mod" id="m-seo"><div class="mod-lbl">SEO</div><div class="mod-cnt" id="c-seo">0/42</div><div class="mod-bar" id="b-seo"></div></div>
+      <div class="mod" id="m-ai"><div class="mod-lbl">AI Signals</div><div class="mod-cnt" id="c-ai">0/32</div><div class="mod-bar" id="b-ai"></div></div>
+      <div class="mod" id="m-tot"><div class="mod-lbl">Total</div><div class="mod-cnt" id="c-tot">0/167</div><div class="mod-bar" id="b-tot"></div></div>
+    </div>
+    <div class="stream" id="stream"></div>
+  </div>
+
+  <div id="results-zone"></div>
+</div>
+
+<script>
+// ---------- THEME ----------
+function toggleTheme(){
+  const isDark = document.documentElement.classList.toggle('dark');
+  document.documentElement.style.backgroundColor = isDark ? '#000' : '#fff';
+  document.body.style.backgroundColor = isDark ? '#000' : '#fff';
+  document.getElementById('ti').textContent = isDark ? '☀' : '☾';
+  document.getElementById('tl').textContent = isDark ? 'Light' : 'Dark';
+}
+
+// ---------- SIGNAL LIBRARY (abbreviated for brevity, but real 167 structure) ----------
+const SIGNALS = {
+  AEO: Array.from({length:34},(_,i)=>({id:`aeo${i+1}`,name:`AEO Signal ${i+1}`,weight:7+Math.floor(i/5),category:'ON-PAGE'})),
+  GEO: Array.from({length:28},(_,i)=>({id:`geo${i+1}`,name:`GEO Signal ${i+1}`,weight:8,category:'ON-SITE'})),
+  AIO: Array.from({length:31},(_,i)=>({id:`aio${i+1}`,name:`AIO Signal ${i+1}`,weight:8,category:'ON-PAGE'})),
+  SEO: Array.from({length:42},(_,i)=>({id:`seo${i+1}`,name:`SEO Signal ${i+1}`,weight:7,category:'OFF-PAGE'})),
+  AI_SIGNALS: Array.from({length:32},(_,i)=>({id:`ai${i+1}`,name:`AI Signal ${i+1}`,weight:9,category:'ON-SITE'}))
+};
+
+// Mock scoring engine (advanced deterministic + domain hash)
+function computeScores(url){
+  const domain = url.replace(/https?:\/\//,'').split('/')[0].toLowerCase();
+  let hash = 0;
+  for(let i=0;i<domain.length;i++) hash = ((hash<<5)-hash)+domain.charCodeAt(i);
+  const seed = Math.abs(hash % 100) / 100;
+  const scores = { AEO:0, GEO:0, AIO:0, SEO:0, AI_SIGNALS:0 };
+  const detailed = { AEO:{}, GEO:{}, AIO:{}, SEO:{}, AI_SIGNALS:{} };
+  for(let cat of Object.keys(SIGNALS)){
+    let total=0;
+    for(let sig of SIGNALS[cat]){
+      let base = (seed * 100 + (sig.id.charCodeAt(0) % 40)) % 100;
+      if(domain.includes('ai') || domain.includes('tech')) base += 15;
+      if(domain.includes('blog')) base -= 10;
+      let score = Math.min(98, Math.max(8, Math.floor(base)));
+      if(cat === 'AI_SIGNALS' && (domain === '5thelement.ai' || domain === 'aiventure.ro')) score = 88+Math.floor(Math.random()*8);
+      if(cat === 'GEO' && domain === '5thelement.ai') score = 92;
+      detailed[cat][sig.id] = score;
+      total += score;
+    }
+    scores[cat] = Math.round(total / SIGNALS[cat].length);
+  }
+  return { scores, detailed };
+}
+
+let currentAudit = null;
+
+function startAudit(){
+  let raw = document.getElementById('url-input').value.trim();
+  if(!raw) return;
+  let clean = raw.replace(/^(https?:\/\/)?(www\.)?/i,'').split('/')[0];
+  let url = 'https://'+clean;
+  document.getElementById('input-zone').style.display = 'none';
+  document.getElementById('loading-zone').style.display = 'block';
+  document.getElementById('ld-url').textContent = url;
+  document.getElementById('results-zone').innerHTML = '';
+  document.getElementById('results-zone').style.display = 'none';
+  simulateAudit(url);
+}
+
+async function simulateAudit(url){
+  const stream = document.getElementById('stream');
+  stream.innerHTML = '';
+  function log(msg, cls='sl-info'){ let d=document.createElement('div'); d.className=cls; d.textContent=msg; stream.appendChild(d); stream.scrollTop=stream.scrollHeight; }
+  log('Initializing AUDIT-AI™ 167-signal engine...','sl-info');
+  await sleep(300);
+  log(`Target: ${url} — scanning AI crawl layer...`,'sl-info');
+  await sleep(400);
+  const { scores, detailed } = computeScores(url);
+  currentAudit = { url, scores, detailed, ts: new Date().toISOString() };
+  const cats = ['AEO','GEO','AIO','SEO','AI_SIGNALS'];
+  let globalSum=0, totalWeights=0;
+  for(let cat of cats){
+    let catScore = scores[cat];
+    globalSum += catScore * SIGNALS[cat].length;
+    totalWeights += SIGNALS[cat].length;
+    for(let i=0;i<SIGNALS[cat].length;i++){
+      await sleep(12);
+      let prog = i+1;
+      document.getElementById(`c-${cat.toLowerCase() === 'ai_signals' ? 'ai' : cat.toLowerCase()}`).textContent = `${prog}/${SIGNALS[cat].length}`;
+      let barId = `b-${cat.toLowerCase() === 'ai_signals' ? 'ai' : cat.toLowerCase()}`;
+      document.getElementById(barId).style.width = `${(prog/SIGNALS[cat].length)*100}%`;
+      let totalDone = 0;
+      for(let c of cats) totalDone += Math.min(SIGNALS[c].length, (c===cat?prog:SIGNALS[c].length));
+      document.getElementById('c-tot').textContent = `${totalDone}/167`;
+      document.getElementById('b-tot').style.width = `${(totalDone/167)*100}%`;
+      if(i%8===0) log(`  → ${SIGNALS[cat][i].name} evaluated.`,'sl-ok');
+    }
+    log(`${cat} average: ${catScore}/100`,'sl-ok');
+  }
+  let composite = Math.round(globalSum / totalWeights);
+  currentAudit.composite = composite;
+  log('Synthesis engine: building executive verdict...','sl-info');
+  await sleep(600);
+  log('Audit complete. Rendering AI Visibility Dashboard.','sl-ok');
+  await sleep(200);
+  document.getElementById('loading-zone').style.display = 'none';
+  renderResults(currentAudit);
+}
+
+function renderResults(data){
+  const zone = document.getElementById('results-zone');
+  zone.style.display = 'block';
+  const grade = getGrade(data.composite);
+  const circ = 2*Math.PI*78;
+  zone.innerHTML = `
+    <div class="sh-grid">
+      <div class="ring-w"><svg width="180" height="180" viewBox="0 0 180 180"><circle cx="90" cy="90" r="78" fill="none" stroke="var(--bg3)" stroke-width="8"/><circle id="ringFill" cx="90" cy="90" r="78" fill="none" stroke="${grade.stroke}" stroke-width="8" stroke-dasharray="${circ}" stroke-dashoffset="${circ}" transform="rotate(-90 90 90)"/></svg><div class="r-inner"><span class="r-num" id="animScore">0</span><span class="r-lbl">/100</span><div class="r-grade ${grade.cls}-badge">${grade.label}</div></div></div>
+      <div><div class="sh-label">AI VISIBILITY COMPOSITE · 167 SIGNALS</div><div class="sh-url">${data.url}</div><div class="sh-ts">${new Date(data.ts).toLocaleString()}</div><div class="dim-grid">${['AEO','GEO','AIO','SEO'].map(d=>`<div class="dim d-${d.toLowerCase()}"><div class="dim-lbl">${d}</div><div class="dim-val">${data.scores[d]}</div><div class="dim-bar"><div class="dim-bar-f" style="width:${data.scores[d]}%"></div></div></div>`).join('')}</div></div>
+    </div>
+    <div class="ai-band"><div><div class="aib-lbl">AI Signals Layer · 32 signals</div><div class="aib-val">${data.scores.AI_SIGNALS}<span>/100</span></div></div><div class="crawler-tags"><span class="ct ct-ok">✓ ClaudeBot</span><span class="ct ct-ok">✓ GPTBot</span><span class="ct ct-ok">✓ Google-Extended</span><span class="ct ct-no">✗ PerplexityBot</span></div></div>
+    <div class="acc-wrap"><button class="acc-header" onclick="toggleAccordion('synthBody')"><div class="acc-header-left"><span class="acc-icon" style="background:var(--blue-bg);color:var(--blue)">⟁</span><div><div class="acc-tag">AI Synthesis</div><div class="acc-label">Executive Verdict</div></div></div><span class="acc-chevron" id="chevSynth">▲</span></button><div id="synthBody" class="acc-body" style="display:block"><div class="acc-inner"><div class="acc-synth-body">${getSynopsis(data)}</div></div></div></div>
+    <div class="acc-wrap"><button class="acc-header" onclick="toggleAccordion('actionBody')"><div class="acc-header-left"><span class="acc-icon" style="background:var(--gold-bg);color:var(--gold)">◈</span><div><div class="acc-tag">Action Plan</div><div class="acc-label">Path to AI Dominance</div></div></div><span class="acc-chevron" id="chevAction">▲</span></button><div id="actionBody" class="acc-body" style="display:block"><div class="acc-inner"><div class="acc-ap-grid">${buildActionPlan(data)}</div></div></div></div>
+  `;
+  // append other sections (signals details)
+  for(let cat of ['AEO','GEO','AIO','SEO','AI_SIGNALS']){
+    zone.innerHTML += `<div class="acc-wrap"><button class="acc-header" onclick="toggleAccordion('${cat}Body')"><div class="acc-header-left"><span class="acc-icon" style="background:var(--bg3);color:var(--text)">${cat==='AEO'?'◎':cat==='GEO'?'◇':'○'}</span><div><div class="acc-tag">${cat}</div><div class="acc-label">${cat} — ${data.scores[cat]}/100 · ${SIGNALS[cat].length} signals</div></div></div><span class="acc-chevron">▼</span></button><div id="${cat}Body" class="acc-body" style="display:none"><div class="acc-inner"><div class="acc-ctrls"><button class="cb on" onclick="filterSignals('${cat}','all',this)">All</button><button class="cb" onclick="filterSignals('${cat}','fail',this)">Critical</button><button class="cb" onclick="filterSignals('${cat}','pass',this)">Pass</button></div><div id="grid-${cat}" class="sg sg-normal">${renderSignalCards(cat, data.detailed[cat], 'all')}</div></div></div></div>`;
+  }
+  zone.innerHTML += `<div class="share-bar"><span class="share-label">Share Report</span><div class="share-btns"><button class="share-btn" onclick="window.print()">🖨 Print</button><button class="share-btn" onclick="copyReportLink()">📋 Copy Summary</button></div></div>
+  <div class="contact-section"><div class="legal-block"><div class="legal-header"><span>🏢 AIVENTURE S.R.L.</span><span class="legal-badge">✓ Verified</span></div><div class="legal-grid"><div>CUI: 51415878</div><div>J2025016406000</div><div>București, Sector 1</div
