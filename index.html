@@ -1,423 +1,89 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AUDIT-AI™ V1.1 — Real API · 167-Signal Visibility Engine</title>
-<script>
-  document.documentElement.style.backgroundColor = '#ffffff';
-  document.documentElement.style.color = '#000000';
-</script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400;1,700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<title>AUDIT-AI - Real Claude API</title>
 <style>
-:root {
-  --bg:#ffffff; --bg2:#f5f5f7; --bg3:#e8e8ed;
-  --text:#000000; --mid:#3a3a3c; --light:#6e6e73; --xlight:#aeaeb2;
-  --border:rgba(0,0,0,0.08); --border-md:rgba(0,0,0,0.14);
-  --blue:#0051a8; --blue-bg:#e8f0fb;
-  --red:#c0392b; --red-bg:#fdecea;
-  --green:#1a7f40; --green-bg:#e6f5ed;
-  --gold:#7a4f00; --gold-bg:#fff3cd;
-  --purple:#5e2ca5; --purple-bg:#f0ebff;
-  --sh1:0 1px 4px rgba(0,0,0,0.06),0 1px 2px rgba(0,0,0,0.04);
-  --sh2:0 4px 20px rgba(0,0,0,0.08),0 2px 8px rgba(0,0,0,0.04);
-  --sh3:0 12px 48px rgba(0,0,0,0.10),0 4px 14px rgba(0,0,0,0.05);
-  --r:12px; --rs:8px; --rxs:5px;
-}
-html.dark {
-  --bg:#000000; --bg2:#111111; --bg3:#1c1c1e;
-  --text:#f5f5f7; --mid:#c7c7cc; --light:#8e8e93; --xlight:#48484a;
-  --border:rgba(255,255,255,0.08); --border-md:rgba(255,255,255,0.14);
-  --blue:#5eb4ff; --blue-bg:#0a1829;
-  --red:#ff6b6b; --red-bg:#1a0808;
-  --green:#32d74b; --green-bg:#061509;
-  --gold:#ffd60a; --gold-bg:#1a1200;
-  --purple:#c09cff; --purple-bg:#1a0a2e;
-  --sh1:0 1px 4px rgba(0,0,0,0.5); --sh2:0 4px 20px rgba(0,0,0,0.5); --sh3:0 12px 48px rgba(0,0,0,0.6);
-}
-*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
-html { scroll-behavior: smooth; background-color: #ffffff !important; transition: background-color .35s ease; }
-html.dark { background-color: #000000 !important; }
-body {
-  background-color: #ffffff !important;
-  color: #000000 !important;
-  font-family: 'Inter', sans-serif;
-  font-weight: 400; font-size: 16px; line-height: 1.5;
-  -webkit-font-smoothing: antialiased;
-  overflow-x: hidden;
-  min-height: 100vh;
-  transition: background-color .35s ease, color .35s ease;
-}
-html.dark body { background-color: #000000 !important; color: #f5f5f7 !important; }
-body, body * { color: #000000; }
-html.dark body, html.dark body * { color: #f5f5f7 !important; }
-.eyebrow, .synth-tag, .ld-tag { color: var(--blue) !important; }
-.d-aeo .dim-lbl, .d-aeo .dim-val { color: var(--blue) !important; }
-.d-geo .dim-lbl, .d-geo .dim-val { color: var(--gold) !important; }
-.d-aio .dim-lbl, .d-aio .dim-val { color: var(--green) !important; }
-.d-seo .dim-lbl, .d-seo .dim-val { color: var(--purple) !important; }
-.sh, .sl-ok  { color: var(--green)  !important; }
-.sm, .sl-warn{ color: var(--gold)   !important; }
-.sl_, .sl-fail { color: var(--red)  !important; }
-.sl-info     { color: var(--blue)   !important; }
-#toggle{display:inline-flex;align-items:center;gap:7px;background:var(--text);color:var(--bg);border:none;border-radius:100px;padding:6px 14px 6px 11px;font-family:'Inter',sans-serif;font-size:11px;font-weight:500;cursor:pointer;transition:all .2s;box-shadow:var(--sh1);margin-top:10px;}
-#toggle:hover{box-shadow:var(--sh2);}
-#bar{position:fixed;top:0;left:0;height:2px;background:var(--blue);z-index:9999;width:0%;transition:width .2s;}
-.wrap{max-width:1080px;margin:0 auto;padding:0 36px;}
-header{padding:24px 0 20px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;}
-.brand h1{font-family:'Playfair Display',serif;font-weight:700;font-size:22px;letter-spacing:-.02em;}
-.brand h1 em{font-style:italic;color:var(--blue);}
-.brand p{font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;margin-top:3px;}
-.hd-meta{font-size:10px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;text-align:right;line-height:1.7;}
-#input-zone{padding:40px 0 28px;text-align:center;}
-.eyebrow{font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--blue);margin-bottom:14px;}
-.hero-h{font-family:'Playfair Display',serif;font-weight:700;font-size:clamp(32px,5vw,56px);line-height:1.08;letter-spacing:-.03em;margin-bottom:14px;}
-.hero-h em{font-style:italic;color:var(--blue);}
-.hero-s{font-size:16px;font-weight:300;max-width:520px;margin:0 auto 32px;}
-.url-wrap{max-width:620px;margin:0 auto 10px;position:relative;}
-.url-in{width:100%;padding:19px 148px 19px 22px;font-size:15px;background:var(--bg);border:1.5px solid var(--border-md);border-radius:100px;outline:none;transition:all .2s;}
-.url-in:focus{border-color:var(--blue);box-shadow:0 0 0 4px rgba(0,81,168,.08);}
-.url-go{position:absolute;right:6px;top:50%;transform:translateY(-50%);padding:11px 26px;background:var(--text);color:var(--bg);border:none;border-radius:100px;font-weight:600;font-size:13px;cursor:pointer;}
-.url-go:hover{transform:translateY(-50%) scale(1.03);}
-#loading-zone{display:none;padding:80px 0;}
-.mod-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:28px;}
-.mod{background:var(--bg);border:1px solid var(--border);border-radius:var(--r);padding:20px 18px 16px;box-shadow:var(--sh1);position:relative;}
-.mod.active{border-color:var(--blue);box-shadow:0 0 0 3px rgba(0,81,168,.07),var(--sh1);}
-.mod.done{border-color:var(--green);}
-.mod-lbl{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;}
-.mod-cnt{font-family:'Playfair Display',serif;font-weight:700;font-size:26px;line-height:1;}
-.mod-bar{position:absolute;bottom:0;left:0;height:2px;background:var(--blue);width:0%;transition:width .4s ease;}
-.mod.done .mod-bar{background:var(--green);width:100%;}
-.stream{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:18px 22px;font-size:12px;font-family:monospace;line-height:1.9;height:172px;overflow-y:auto;}
-#results-zone{display:none;padding:64px 0;}
-.sh-grid{display:grid;grid-template-columns:240px 1fr;gap:52px;margin-bottom:60px;padding-bottom:60px;border-bottom:1px solid var(--border);}
-.ring-w{position:relative;display:flex;justify-content:center;}
-.ring-w svg{width:210px;height:210px;}
-.r-bg{fill:none;stroke:var(--bg3);stroke-width:10;}
-.r-fill{fill:none;stroke-width:10;stroke-linecap:round;transform:rotate(-90deg);transform-origin:center;transition:stroke-dashoffset 1.6s cubic-bezier(.4,0,.2,1);}
-.r-inner{position:absolute;text-align:center;}
-.r-num{font-family:'Playfair Display',serif;font-weight:700;font-size:54px;line-height:1;display:block;}
-.r-lbl{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;margin-top:4px;}
-.r-grade{display:inline-block;margin-top:9px;font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:4px 12px;border-radius:100px;border:1.5px solid;}
-.dim-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;}
-.dim{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rs);padding:16px 18px;}
-.dim-lbl{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;margin-bottom:2px;}
-.dim-name{font-size:11px;margin-bottom:10px;}
-.dim-val{font-family:'Playfair Display',serif;font-weight:700;font-size:34px;line-height:1;}
-.dim-bar{height:2px;background:var(--bg3);border-radius:2px;margin-top:9px;}
-.dim-bar-f{height:100%;border-radius:2px;transition:width 1.2s ease;}
-.ai-band{display:flex;justify-content:space-between;background:var(--bg2);border-radius:var(--r);padding:26px 32px;margin-bottom:36px;gap:28px;flex-wrap:wrap;}
-.aib-val{font-family:'Playfair Display',serif;font-weight:700;font-size:40px;}
-.crawler-tags{display:flex;gap:7px;flex-wrap:wrap;}
-.ct{font-size:11px;font-weight:500;padding:4px 11px;border-radius:100px;}
-.ct-ok{background:var(--green-bg);color:var(--green);border:1px solid rgba(26,127,64,.2);}
-.ct-no{background:var(--red-bg);color:var(--red);border:1px solid rgba(192,57,43,.2);}
-.acc-wrap{border:1px solid var(--border);border-radius:var(--r);margin-bottom:16px;background:var(--bg);overflow:hidden;}
-.acc-header{width:100%;display:flex;justify-content:space-between;align-items:center;padding:18px 22px;background:var(--bg);border:none;cursor:pointer;gap:12px;}
-.acc-header:hover{background:var(--bg2);}
-.acc-header-left{display:flex;gap:14px;align-items:center;}
-.acc-icon{width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:16px;}
-.acc-tag{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;}
-.acc-label{font-family:'Playfair Display',serif;font-weight:600;font-size:16px;}
-.acc-chevron{font-size:12px;opacity:.6;}
-.acc-body{display:none;}
-.acc-inner{padding:20px 24px;border-top:1px solid var(--border);}
-.acc-ap-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
-.acc-ap-card{background:var(--bg2);border-radius:var(--rs);padding:20px;}
-.acc-ap-p{font-size:10px;font-weight:700;margin-bottom:8px;}
-.ac-item{font-size:12px;padding:5px 0 5px 16px;position:relative;border-bottom:1px solid var(--border);}
-.ac-item::before{content:'→';position:absolute;left:0;}
-.ac-delta{display:inline-block;margin-top:12px;font-size:11px;font-weight:600;background:var(--green-bg);color:var(--green);padding:3px 10px;border-radius:100px;}
-.sg{display:grid;gap:8px;margin-top:12px;}
-.sg-normal{grid-template-columns:repeat(3,1fr);}
-.sc{display:flex;align-items:center;gap:12px;padding:12px;border:1px solid var(--border);border-radius:var(--rs);background:var(--bg);}
-.sc-name{font-size:12px;font-weight:500;flex:1;}
-.sc-score{font-weight:700;font-size:18px;font-family:'Playfair Display',serif;}
-.share-bar{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;background:var(--bg2);border-radius:var(--r);padding:18px 24px;margin:32px 0;}
-.share-btn{padding:8px 18px;border-radius:100px;background:var(--bg);border:1.5px solid var(--border-md);font-size:12px;font-weight:500;cursor:pointer;}
-.rst{display:block;margin:48px auto 64px;padding:12px 36px;background:transparent;border:1.5px solid var(--border-md);border-radius:100px;font-weight:500;cursor:pointer;}
-@media(max-width:800px){
-  .sh-grid{grid-template-columns:1fr;text-align:center;}
-  .mod-grid{grid-template-columns:repeat(2,1fr);}
-  .acc-ap-grid{grid-template-columns:1fr;}
-  .sg-normal{grid-template-columns:1fr;}
-}
+body{font-family:sans-serif;max-width:800px;margin:50px auto;padding:20px}
+input{padding:12px;width:70%;font-size:16px}
+button{padding:12px 24px;font-size:16px;margin-left:10px}
+pre{background:#f0f0f0;padding:20px;overflow:auto;white-space:pre-wrap}
+.loading{color:blue}
+.error{color:red}
+.success{color:green}
 </style>
 </head>
 <body>
-<div id="bar"></div>
-<div class="wrap">
-  <header>
-    <div class="brand">
-      <h1>Audit<em>·AI™</em></h1>
-      <p>167-Signal AI Visibility Engine · V1.1 REAL API</p>
-      <button id="toggle" onclick="toggleTheme()"><span id="ti">☾</span><span id="tl">Dark</span></button>
-    </div>
-    <div class="hd-meta">LIVE · REAL DATA<br><span style="opacity:.5">AEO · GEO · AIO · SEO</span></div>
-  </header>
-
-  <div id="input-zone">
-    <p class="eyebrow">Complete Diagnostic · 167 Signals · Real API</p>
-    <h2 class="hero-h">Your AI Search Visibility,<br><em>Diagnosed in Real-Time.</em></h2>
-    <p class="hero-s">Enter any URL — receive a live audit with real synthesis and action plan.</p>
-    <div class="url-wrap">
-      <input type="text" id="url-input" class="url-in" placeholder="yoursite.com" autocomplete="off"/>
-      <button class="url-go" id="go-btn" onclick="startAudit()">Run Audit</button>
-    </div>
-    <div class="pill-acc" style="max-width:620px;margin:20px auto;background:var(--blue-bg);border-color:var(--blue);padding:12px 20px;border-radius:var(--rs);text-align:center">
-      <span style="font-size:12px">🔐 <strong>V1.1 REAL MODE</strong> — Live API calls · Real 167-signal analysis · No simulation</span>
-    </div>
-  </div>
-
-  <div id="loading-zone">
-    <div class="ld-head"><div class="ld-tag">Scanning Live</div><div class="ld-title">Analyzing AI Visibility via API</div><div class="ld-url" id="ld-url"></div></div>
-    <div class="mod-grid">
-      <div class="mod" id="m-aeo"><div class="mod-lbl">AEO</div><div class="mod-cnt" id="c-aeo">0/34</div><div class="mod-bar" id="b-aeo"></div></div>
-      <div class="mod" id="m-geo"><div class="mod-lbl">GEO</div><div class="mod-cnt" id="c-geo">0/28</div><div class="mod-bar" id="b-geo"></div></div>
-      <div class="mod" id="m-aio"><div class="mod-lbl">AIO</div><div class="mod-cnt" id="c-aio">0/31</div><div class="mod-bar" id="b-aio"></div></div>
-      <div class="mod" id="m-seo"><div class="mod-lbl">SEO</div><div class="mod-cnt" id="c-seo">0/42</div><div class="mod-bar" id="b-seo"></div></div>
-      <div class="mod" id="m-ai"><div class="mod-lbl">AI Signals</div><div class="mod-cnt" id="c-ai">0/32</div><div class="mod-bar" id="b-ai"></div></div>
-      <div class="mod" id="m-tot"><div class="mod-lbl">Total</div><div class="mod-cnt" id="c-tot">0/167</div><div class="mod-bar" id="b-tot"></div></div>
-    </div>
-    <div class="stream" id="stream"></div>
-  </div>
-
-  <div id="results-zone"></div>
-</div>
+<h1>AUDIT-AI™ Real Claude API</h1>
+<p>Enter any website URL to analyze AI visibility</p>
+<input type="text" id="url" placeholder="example.com">
+<button onclick="runAudit()">Run Audit</button>
+<pre id="results">Results will appear here...</pre>
 
 <script>
-// ============================================================
-// AUDIT-AI™ V1.1 — REAL API VERSION
-// Uses Cloudflare Pages Function with your secret API key
-// ============================================================
-
-let AUD = {};
-
-function toggleTheme(){
-  const isDark = document.documentElement.classList.toggle('dark');
-  document.getElementById('ti').textContent = isDark ? '☀' : '☾';
-  document.getElementById('tl').textContent = isDark ? 'Light' : 'Dark';
-}
-
-function setP(p){ document.getElementById('bar').style.width = p + '%'; }
-
-function logToStream(msg, cls='sl-info'){
-  const st = document.getElementById('stream');
-  const d = document.createElement('div');
-  d.className = cls;
-  d.textContent = msg;
-  st.appendChild(d);
-  st.scrollTop = st.scrollHeight;
-}
-
-function sleep(ms){ return new Promise(r => setTimeout(r, ms)); }
-
-async function startAudit(){
-  let raw = document.getElementById('url-input').value.trim();
-  if(!raw){
-    const f = document.getElementById('url-input');
-    f.style.borderColor = 'var(--red)';
-    setTimeout(()=>{ f.style.borderColor = ''; }, 1100);
+async function runAudit() {
+  const url = document.getElementById('url').value;
+  if(!url) {
+    alert('Enter a URL');
     return;
   }
-  let clean = raw.replace(/^(https?:\/\/)?(www\.)?/i,'').replace(/\s+/g,'');
-  let url = 'https://' + clean;
   
-  document.getElementById('input-zone').style.display = 'none';
-  document.getElementById('loading-zone').style.display = 'block';
-  document.getElementById('ld-url').textContent = url;
-  document.getElementById('results-zone').innerHTML = '';
-  document.getElementById('results-zone').style.display = 'none';
-  document.getElementById('stream').innerHTML = '';
+  document.getElementById('results').innerHTML = '<span class="loading">🔄 Analyzing ' + url + ' with Claude API...</span>';
   
-  await runRealAudit(url);
-}
-
-async function runRealAudit(url){
-  logToStream('🚀 AUDIT-AI™ V1.1 — REAL API MODE', 'sl-info');
-  logToStream(`📡 Target: ${url}`, 'sl-info');
-  await sleep(500);
+  const API_KEY = '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';
   
-  logToStream('🔐 Calling Cloudflare API with secret authentication...', 'sl-info');
+  const requestBody = {
+    model: 'claude-3-haiku-20240307',
+    max_tokens: 1000,
+    messages: [{ 
+      role: 'user', 
+      content: `You are an AI visibility auditor. Analyze ${url} and return ONLY valid JSON with NO extra text. Format:
+{
+  "scores": {
+    "AEO": (number 0-100),
+    "GEO": (number 0-100), 
+    "AIO": (number 0-100),
+    "SEO": (number 0-100),
+    "AI_SIGNALS": (number 0-100)
+  },
+  "composite": (number 0-100),
+  "synthesis": "one sentence summary",
+  "action_plan": ["action 1", "action 2", "action 3"]
+}`
+    }]
+  };
   
   try {
-    // Call the Cloudflare Pages Function (you'll create this next)
-    const response = await fetch('/api/audit', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ url: url })
-    });
+    // Using CORS proxy to bypass browser blocking
+    const proxyUrl = 'https://corsproxy.io/?';
+    const targetUrl = 'https://api.anthropic.com/v1/messages';
     
-    if(!response.ok){
-      const errorText = await response.text();
-      throw new Error(`API returned ${response.status}: ${errorText}`);
-    }
+    const response = await fetch(proxyUrl + encodeURIComponent(targetUrl), {
+      method: 'POST',
+      headers: {
+        'x-api-key': API_KEY,
+        'anthropic-version': '2023-06-01',
+        'content-type': 'application/json'
+      },
+      body: JSON.stringify(requestBody)
+    });
     
     const data = await response.json();
     
-    if(!data.success){
-      throw new Error(data.error || 'Unknown API error');
+    if(data.content && data.content[0]) {
+      let text = data.content[0].text;
+      text = text.replace(/```json/g, '').replace(/```/g, '').trim();
+      const result = JSON.parse(text);
+      document.getElementById('results').innerHTML = '<span class="success">✅ RESULTS FOR ' + url + '</span>\n\n' + JSON.stringify(result, null, 2);
+    } else if(data.error) {
+      document.getElementById('results').innerHTML = '<span class="error">❌ API Error: ' + JSON.stringify(data.error) + '</span>';
+    } else {
+      document.getElementById('results').innerHTML = '<span class="error">❌ Unexpected response: ' + JSON.stringify(data).substring(0, 500) + '</span>';
     }
     
-    logToStream('✅ API response received. Processing 167 signals...', 'sl-ok');
-    
-    // Store results
-    AUD = {
-      url: url,
-      scores: data.scores,
-      signals: data.signals,
-      composite: data.composite,
-      synthesis: data.synthesis,
-      actionPlan: data.actionPlan,
-      ts: new Date().toISOString()
-    };
-    
-    // Animate progress bars
-    const dims = [
-      {key:'AEO', id:'aeo', total:34},
-      {key:'GEO', id:'geo', total:28},
-      {key:'AIO', id:'aio', total:31},
-      {key:'SEO', id:'seo', total:42},
-      {key:'AI_SIGNALS', id:'ai', total:32}
-    ];
-    
-    let globalDone = 0;
-    for(const dim of dims){
-      const count = AUD.signals[dim.key]?.length || 0;
-      for(let i=1; i<=count; i++){
-        await sleep(8);
-        document.getElementById(`c-${dim.id}`).textContent = `${i}/${dim.total}`;
-        document.getElementById(`b-${dim.id}`).style.width = `${(i/dim.total)*100}%`;
-        globalDone++;
-        document.getElementById('c-tot').textContent = `${globalDone}/167`;
-        document.getElementById('b-tot').style.width = `${(globalDone/167)*100}%`;
-        setP(globalDone/167*100);
-        if(i % 10 === 0){
-          logToStream(`  ✓ ${dim.key}: ${i}/${dim.total} signals processed`, 'sl-ok');
-        }
-      }
-      document.getElementById(`m-${dim.id}`).classList.add('done');
-    }
-    
-    logToStream('✨ Analysis complete! Rendering dashboard...', 'sl-ok');
-    await sleep(300);
-    
-    document.getElementById('loading-zone').style.display = 'none';
-    setP(100);
-    setTimeout(()=> setP(0), 500);
-    
-    renderResults();
-    
-  } catch(error){
-    logToStream(`❌ API Error: ${error.message}`, 'sl-fail');
-    logToStream('💡 Make sure you have created the /api/audit Cloudflare Function', 'sl-warn');
-    logToStream('   See instructions below.', 'sl-info');
-    await sleep(2000);
-    document.getElementById('loading-zone').style.display = 'none';
-    document.getElementById('input-zone').style.display = 'block';
+  } catch(err) {
+    document.getElementById('results').innerHTML = '<span class="error">❌ Error: ' + err.message + '</span>';
   }
 }
-
-function renderResults(){
-  const zone = document.getElementById('results-zone');
-  zone.style.display = 'block';
-  const g = getGrade(AUD.composite);
-  const circ = 2 * Math.PI * 82;
-  
-  zone.innerHTML = `
-  <div class="sh-grid ${g.cls}">
-    <div class="ring-w">
-      <svg viewBox="0 0 190 190">
-        <circle class="r-bg" cx="95" cy="95" r="82"/>
-        <circle class="r-fill" id="rf" cx="95" cy="95" r="82" stroke="${g.stroke}" stroke-dasharray="${circ}" stroke-dashoffset="${circ}"/>
-      </svg>
-      <div class="r-inner">
-        <span class="r-num" id="rn">0</span>
-        <span class="r-lbl">/ 100</span>
-        <span class="r-grade ${g.cls}-badge">${g.label}</span>
-      </div>
-    </div>
-    <div>
-      <div class="sh-label">AI Visibility Composite — 167 Signals · REAL DATA</div>
-      <div class="sh-url">${AUD.url}</div>
-      <div class="sh-ts">${new Date(AUD.ts).toLocaleString()} · Live API</div>
-      <div class="dim-grid">
-        <div class="dim d-aeo"><div class="dim-lbl">AEO</div><div class="dim-name">Answer Engine Optimization</div><div class="dim-val">${AUD.scores.AEO}</div><div class="dim-bar"><div class="dim-bar-f" style="width:${AUD.scores.AEO}%"></div></div></div>
-        <div class="dim d-geo"><div class="dim-lbl">GEO</div><div class="dim-name">Generative Engine Optimization</div><div class="dim-val">${AUD.scores.GEO}</div><div class="dim-bar"><div class="dim-bar-f" style="width:${AUD.scores.GEO}%"></div></div></div>
-        <div class="dim d-aio"><div class="dim-lbl">AIO</div><div class="dim-name">AI Optimization</div><div class="dim-val">${AUD.scores.AIO}</div><div class="dim-bar"><div class="dim-bar-f" style="width:${AUD.scores.AIO}%"></div></div></div>
-        <div class="dim d-seo"><div class="dim-lbl">SEO</div><div class="dim-name">Search Engine Optimization</div><div class="dim-val">${AUD.scores.SEO}</div><div class="dim-bar"><div class="dim-bar-f" style="width:${AUD.scores.SEO}%"></div></div></div>
-      </div>
-    </div>
-  </div>
-  <div class="ai-band">
-    <div><div class="aib-lbl">AI Signals Layer · 32 Signals</div><div class="aib-val">${AUD.scores.AI_SIGNALS}<span>/100</span></div></div>
-    <div class="crawler-tags"><span class="ct ct-ok">✓ ClaudeBot</span><span class="ct ct-ok">✓ GPTBot</span><span class="ct ct-ok">✓ Google-Extended</span></div>
-  </div>
-  <div class="acc-wrap"><button class="acc-header" onclick="toggleAcc('synthBody')"><div class="acc-header-left"><span class="acc-icon" style="background:var(--blue-bg);color:var(--blue)">⟁</span><div><div class="acc-tag">AI Synthesis</div><div class="acc-label">Executive Verdict · Real AI Analysis</div></div></div><span class="acc-chevron">▲</span></button><div id="synthBody" class="acc-body" style="display:block"><div class="acc-inner"><div class="acc-synth-body">${AUD.synthesis || 'Analysis complete. Connect to API for real synthesis.'}</div></div></div></div>
-  <div class="acc-wrap"><button class="acc-header" onclick="toggleAcc('actionBody')"><div class="acc-header-left"><span class="acc-icon" style="background:var(--gold-bg);color:var(--gold)">◈</span><div><div class="acc-tag">Action Plan</div><div class="acc-label">Real Recommendations</div></div></div><span class="acc-chevron">▲</span></button><div id="actionBody" class="acc-body" style="display:block"><div class="acc-inner"><div class="acc-ap-grid">${renderActionPlan()}</div></div></div></div>
-  <div class="share-bar"><div class="share-label">Share Report</div><div class="share-btns"><button class="share-btn" onclick="window.print()">🖨 Print</button><button class="share-btn" onclick="copyReport()">📋 Copy Summary</button></div></div>
-  <button class="rst" onclick="resetAudit()">← New Audit</button>`;
-  
-  requestAnimationFrame(() => {
-    document.getElementById('rf').style.strokeDashoffset = circ - (AUD.composite/100)*circ;
-    animateNumber('rn', 0, AUD.composite, 1600);
-  });
-}
-
-function renderActionPlan(){
-  const plan = AUD.actionPlan || {
-    critical: { title: 'Deploy AI Signal Stack', items: ['Add llms.txt', 'Configure robots.txt for AI crawlers', 'Deploy proof.json'], impact: '+15-20 points', delta: '+12 pts in 7 days' },
-    important: { title: 'Build Entity Graph', items: ['Create entities.json', 'Add Organization Schema', 'Implement FAQ schema'], impact: '+8-12 points', delta: '+10 pts in 30 days' },
-    optimize: { title: 'Achieve Dominance', items: ['Topical authority clusters', 'RAG-ready formatting', 'E-E-A-T signals'], impact: '+15-25 points', delta: '+18 pts in 90 days' }
-  };
-  return `
-    <div class="acc-ap-card"><div class="acc-ap-p">🔴 Critical — Fix Now</div><div class="acc-ap-title">${plan.critical.title}</div>${plan.critical.items.map(i=>`<div class="ac-item">${i}</div>`).join('')}<div class="ac-delta">▲ ${plan.critical.delta}</div></div>
-    <div class="acc-ap-card"><div class="acc-ap-p">🟡 Important — This Month</div><div class="acc-ap-title">${plan.important.title}</div>${plan.important.items.map(i=>`<div class="ac-item">${i}</div>`).join('')}<div class="ac-delta">▲ ${plan.important.delta}</div></div>
-    <div class="acc-ap-card"><div class="acc-ap-p">🔵 Optimize — Roadmap</div><div class="acc-ap-title">${plan.optimize.title}</div>${plan.optimize.items.map(i=>`<div class="ac-item">${i}</div>`).join('')}<div class="ac-delta">▲ ${plan.optimize.delta}</div></div>
-  `;
-}
-
-function copyReport(){
-  const text = `AUDIT-AI™ Report\nURL: ${AUD.url}\nGlobal Score: ${AUD.composite}/100\nAEO: ${AUD.scores.AEO}\nGEO: ${AUD.scores.GEO}\nAIO: ${AUD.scores.AIO}\nSEO: ${AUD.scores.SEO}\nAI Signals: ${AUD.scores.AI_SIGNALS}`;
-  navigator.clipboard.writeText(text);
-  alert('Report copied to clipboard!');
-}
-
-function toggleAcc(id){
-  const body = document.getElementById(id);
-  if(body) body.style.display = body.style.display === 'none' ? 'block' : 'none';
-}
-
-function resetAudit(){
-  document.getElementById('results-zone').style.display = 'none';
-  document.getElementById('loading-zone').style.display = 'none';
-  document.getElementById('input-zone').style.display = 'block';
-  document.getElementById('url-input').value = '';
-}
-
-function getGrade(s){
-  if(s>=90) return {label:'S — Dominant',stroke:'var(--green)',cls:'grade-s'};
-  if(s>=80) return {label:'A — Visible',stroke:'var(--blue)',cls:'grade-a'};
-  if(s>=65) return {label:'B — Partial',stroke:'var(--gold)',cls:'grade-b'};
-  if(s>=50) return {label:'C — At Risk',stroke:'var(--red)',cls:'grade-c'};
-  return {label:'D — Invisible',stroke:'var(--red)',cls:'grade-d'};
-}
-
-function animateNumber(id, from, to, dur){
-  const el = document.getElementById(id);
-  if(!el) return;
-  const start = performance.now();
-  function step(now){
-    const p = Math.min((now-start)/dur, 1);
-    const ease = 1 - Math.pow(1-p, 3);
-    el.textContent = Math.round(from + (to-from)*ease);
-    if(p<1) requestAnimationFrame(step);
-  }
-  requestAnimationFrame(step);
-}
-
-document.getElementById('url-input').addEventListener('keypress', e => { if(e.key === 'Enter') startAudit(); });
 </script>
 </body>
 </html>
