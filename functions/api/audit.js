@@ -10,9 +10,9 @@ export async function onRequest(context) {
       'content-type': 'application/json'
     },
     body: JSON.stringify({
-      model: 'claude-3-5-sonnet-20241022',
+      model: 'claude-3-opus-20240229',
       max_tokens: 500,
-      messages: [{ role: 'user', content: `Analyze ${body.url} for AI visibility. Return JSON only.` }]
+      messages: [{ role: 'user', content: `Say "Hello from Claude"` }]
     })
   });
   
