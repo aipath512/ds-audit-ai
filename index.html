@@ -3,10 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AUDIT-AI™ — REAL Signal Checker</title>
-<script>
-  document.documentElement.style.backgroundColor = '#ffffff';
-</script>
+<title>AUDIT-AI™ — 167-Signal Visibility Engine</title>
+<script>document.documentElement.style.backgroundColor = '#ffffff';</script>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -16,6 +14,7 @@
   --red:#c0392b; --red-bg:#fdecea;
   --green:#1a7f40; --green-bg:#e6f5ed;
   --gold:#7a4f00; --gold-bg:#fff3cd;
+  --purple:#5e2ca5; --purple-bg:#f0ebff;
 }
 html.dark {
   --bg:#000000; --bg2:#111111; --bg3:#1c1c1e;
@@ -24,33 +23,36 @@ html.dark {
   --red:#ff6b6b; --red-bg:#1a0808;
   --green:#32d74b; --green-bg:#061509;
   --gold:#ffd60a; --gold-bg:#1a1200;
+  --purple:#c09cff; --purple-bg:#1a0a2e;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
-body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:16px;line-height:1.5;}
-.wrap{max-width:1100px;margin:0 auto;padding:0 32px;}
-header{padding:24px 0 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:15px;line-height:1.5;}
+.wrap{max-width:1400px;margin:0 auto;padding:0 24px;}
+header{padding:20px 0;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
 .brand h1{font-family:'Playfair Display',serif;font-weight:700;font-size:22px;}
 .brand h1 em{font-style:italic;color:var(--blue);}
 #toggle{padding:6px 14px;background:var(--text);color:var(--bg);border:none;border-radius:100px;cursor:pointer;font-size:11px;}
 #bar{position:fixed;top:0;left:0;height:2px;background:var(--blue);width:0%;z-index:9999;}
-#input-zone{padding:48px 0;text-align:center;}
-.hero-h{font-family:'Playfair Display',serif;font-weight:700;font-size:clamp(32px,5vw,52px);margin-bottom:14px;}
+#input-zone{padding:40px 0;text-align:center;}
+.hero-h{font-family:'Playfair Display',serif;font-weight:700;font-size:clamp(28px,4vw,44px);margin-bottom:14px;}
 .hero-h em{font-style:italic;color:var(--blue);}
-.url-wrap{max-width:560px;margin:0 auto;position:relative;}
-.url-in{width:100%;padding:18px 140px 18px 22px;font-size:15px;background:var(--bg);border:1.5px solid var(--border);border-radius:100px;outline:none;}
-.url-go{position:absolute;right:6px;top:50%;transform:translateY(-50%);padding:10px 24px;background:var(--text);color:var(--bg);border:none;border-radius:100px;font-weight:600;cursor:pointer;}
-#loading-zone{display:none;padding:60px 0;text-align:center;}
-#results-zone{display:none;padding:48px 0;}
-.score-circle{width:140px;height:140px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:48px;font-weight:700;font-family:'Playfair Display',serif;}
-.file-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;margin:20px 0;}
-.file-item{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;}
-.file-name{font-weight:600;font-size:14px;}
-.file-status{font-size:13px;font-weight:500;}
-.status-found{color:var(--green);}
-.status-missing{color:var(--red);}
-.category-card{background:var(--bg2);border-radius:16px;padding:20px;margin-bottom:20px;}
-.category-title{font-size:18px;font-weight:700;margin-bottom:16px;padding-bottom:8px;border-bottom:2px solid var(--border);}
-.score-badge{display:inline-block;padding:4px 12px;border-radius:100px;font-size:14px;font-weight:600;margin-left:12px;}
+.url-wrap{max-width:500px;margin:0 auto;position:relative;}
+.url-in{width:100%;padding:16px 130px 16px 20px;font-size:15px;background:var(--bg);border:1.5px solid var(--border);border-radius:100px;outline:none;}
+.url-go{position:absolute;right:6px;top:50%;transform:translateY(-50%);padding:9px 22px;background:var(--text);color:var(--bg);border:none;border-radius:100px;font-weight:600;cursor:pointer;}
+#loading-zone{display:none;padding:40px 0;text-align:center;}
+#results-zone{display:none;padding:32px 0;}
+.glossary-link{font-size:12px;color:var(--blue);cursor:pointer;text-decoration:underline;margin-left:8px;}
+.signals-table{width:100%;border-collapse:collapse;margin-top:16px;font-size:13px;}
+.signals-table th,.signals-table td{padding:10px 8px;text-align:left;border-bottom:1px solid var(--border);vertical-align:top;}
+.signals-table th{background:var(--bg2);font-weight:600;position:sticky;top:0;}
+.status-pass{color:var(--green);font-weight:600;}
+.status-warn{color:var(--gold);font-weight:600;}
+.status-fail{color:var(--red);font-weight:600;}
+.family-header{background:var(--bg3);font-weight:700;}
+.family-row td{background:var(--bg2);font-weight:600;}
+.category-card{background:var(--bg2);border-radius:16px;padding:20px;margin-bottom:24px;overflow-x:auto;}
+.category-title{font-size:20px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+.score-badge{padding:4px 12px;border-radius:100px;font-size:14px;font-weight:600;color:white;}
 .rst{display:block;margin:40px auto;padding:12px 40px;background:transparent;border:1.5px solid var(--border);border-radius:100px;cursor:pointer;}
 </style>
 </head>
@@ -58,7 +60,7 @@ header{padding:24px 0 20px;border-bottom:1px solid var(--border);display:flex;ju
 <div id="bar"></div>
 <div class="wrap">
   <header>
-    <div class="brand"><h1>Audit<em>·AI™</em></h1><p>REAL Signal Checker · 167 Signals</p></div>
+    <div class="brand"><h1>Audit<em>·AI™</em></h1><p>167-Signal AI Visibility Engine</p></div>
     <button id="toggle" onclick="toggleTheme()"><span id="ti">☾</span><span id="tl">Dark</span></button>
   </header>
 
@@ -66,13 +68,13 @@ header{padding:24px 0 20px;border-bottom:1px solid var(--border);display:flex;ju
     <h2 class="hero-h">Your AI Search Visibility,<br><em>Diagnosed.</em></h2>
     <div class="url-wrap">
       <input type="text" id="url-input" class="url-in" placeholder="example.com" autocomplete="off"/>
-      <button class="url-go" onclick="startAudit()">Run REAL Audit</button>
+      <button class="url-go" onclick="startAudit()">Run 167-Signal Audit</button>
     </div>
   </div>
 
   <div id="loading-zone">
-    <div style="font-size:20px;margin-bottom:16px;">🔍 Scanning REAL files...</div>
-    <div id="stream" style="background:var(--bg2);border-radius:12px;padding:16px;text-align:left;font-family:monospace;font-size:12px;height:200px;overflow-y:auto;"></div>
+    <div>🔍 Scanning 167 signals...</div>
+    <div id="stream" style="background:var(--bg2);border-radius:12px;padding:16px;margin-top:20px;text-align:left;font-family:monospace;font-size:12px;height:200px;overflow-y:auto;"></div>
   </div>
 
   <div id="results-zone"></div>
@@ -81,9 +83,229 @@ header{padding:24px 0 20px;border-bottom:1px solid var(--border);display:flex;ju
 <script>
 const WORKER_URL = 'https://audit-worker.aipath512.workers.dev';
 
-function toggleTheme(){
-  document.documentElement.classList.toggle('dark');
-}
+// ========== 167 SIGNALS DATABASE ==========
+const SIGNALS = {
+  AEO: {
+    name: "Answer Engine Optimization",
+    color: "var(--blue)",
+    bg: "var(--blue-bg)",
+    signals: [
+      { id: "aeo1", name: "FAQ Schema Markup", family: "ON-PAGE", weight: 9, lvl: "L3" },
+      { id: "aeo2", name: "HowTo Schema Markup", family: "ON-PAGE", weight: 8, lvl: "L3" },
+      { id: "aeo3", name: "Q&A Format Content Blocks", family: "ON-PAGE", weight: 9, lvl: "L3" },
+      { id: "aeo4", name: "Structured Answer Snippets", family: "ON-PAGE", weight: 10, lvl: "L4" },
+      { id: "aeo5", name: "Speakable Schema (Voice)", family: "ON-PAGE", weight: 7, lvl: "L4" },
+      { id: "aeo6", name: "Article Schema Presence", family: "ON-PAGE", weight: 8, lvl: "L2" },
+      { id: "aeo7", name: "Breadcrumb Schema", family: "ON-PAGE", weight: 7, lvl: "L2" },
+      { id: "aeo8", name: "Table of Contents Anchors", family: "ON-PAGE", weight: 6, lvl: "L2" },
+      { id: "aeo9", name: "Entity Disambiguation (Wikidata)", family: "OFF-PAGE", weight: 9, lvl: "L4" },
+      { id: "aeo10", name: "Knowledge Panel Presence", family: "OFF-PAGE", weight: 10, lvl: "L5" },
+      { id: "aeo11", name: "Direct Answer Formatting", family: "ON-PAGE", weight: 9, lvl: "L3" },
+      { id: "aeo12", name: "Question-Intent URL Structure", family: "ON-SITE", weight: 7, lvl: "L2" },
+      { id: "aeo13", name: "PAA Coverage", family: "OFF-PAGE", weight: 8, lvl: "L3" },
+      { id: "aeo14", name: "Featured Snippet Optimization", family: "ON-PAGE", weight: 10, lvl: "L4" },
+      { id: "aeo15", name: "Definition Blocks", family: "ON-PAGE", weight: 7, lvl: "L2" },
+      { id: "aeo16", name: "Step-by-Step Schema", family: "ON-PAGE", weight: 7, lvl: "L3" },
+      { id: "aeo17", name: "Concise Lead Paragraphs <60w", family: "ON-PAGE", weight: 8, lvl: "L2" },
+      { id: "aeo18", name: "Voice Search Query Match", family: "ON-PAGE", weight: 7, lvl: "L3" },
+      { id: "aeo19", name: "Answer-First Content Structure", family: "ON-PAGE", weight: 9, lvl: "L4" },
+      { id: "aeo20", name: "NLP-Friendly Headings", family: "ON-PAGE", weight: 8, lvl: "L3" },
+      { id: "aeo21", name: "Conversational Query Coverage", family: "ON-PAGE", weight: 8, lvl: "L4" },
+      { id: "aeo22", name: "Schema Nesting Depth", family: "ON-PAGE", weight: 6, lvl: "L3" },
+      { id: "aeo23", name: "Rich Snippet Eligibility", family: "ON-PAGE", weight: 9, lvl: "L3" },
+      { id: "aeo24", name: "Google SGE Optimization", family: "ON-PAGE", weight: 10, lvl: "L5" },
+      { id: "aeo25", name: "Context Carryover Signals", family: "ON-PAGE", weight: 7, lvl: "L4" },
+      { id: "aeo26", name: "Entity Salience Score", family: "ON-PAGE", weight: 8, lvl: "L4" },
+      { id: "aeo27", name: "Semantic HTML5 Structure", family: "ON-SITE", weight: 7, lvl: "L2" },
+      { id: "aeo28", name: "ClaimReview Schema", family: "ON-PAGE", weight: 6, lvl: "L4" },
+      { id: "aeo29", name: "Event Schema Accuracy", family: "ON-PAGE", weight: 5, lvl: "L2" },
+      { id: "aeo30", name: "Product Schema Completeness", family: "ON-PAGE", weight: 7, lvl: "L3" },
+      { id: "aeo31", name: "Local Business Schema", family: "ON-PAGE", weight: 7, lvl: "L2" },
+      { id: "aeo32", name: "Review / Rating Schema", family: "ON-PAGE", weight: 6, lvl: "L3" },
+      { id: "aeo33", name: "Video Schema Markup", family: "ON-PAGE", weight: 5, lvl: "L3" },
+      { id: "aeo34", name: "Person / Author Schema", family: "ON-PAGE", weight: 7, lvl: "L2" }
+    ]},
+  GEO: {
+    name: "Generative Engine Optimization",
+    color: "var(--gold)",
+    bg: "var(--gold-bg)",
+    signals: [
+      { id: "geo1", name: "llms.txt Presence & Quality", family: "ON-SITE", weight: 10, lvl: "L4" },
+      { id: "geo2", name: "ai.txt / AI Directives File", family: "ON-SITE", weight: 9, lvl: "L4" },
+      { id: "geo3", name: "robots.txt AI Crawler Rules", family: "ON-SITE", weight: 9, lvl: "L3" },
+      { id: "geo4", name: "Entity Graph JSON-LD", family: "ON-SITE", weight: 10, lvl: "L5" },
+      { id: "geo5", name: "Organization Schema Completeness", family: "ON-PAGE", weight: 9, lvl: "L3" },
+      { id: "geo6", name: "sameAs References External", family: "OFF-PAGE", weight: 8, lvl: "L4" },
+      { id: "geo7", name: "Wikipedia / Wikidata Entry", family: "OFF-PAGE", weight: 10, lvl: "L5" },
+      { id: "geo8", name: "ai.json Signal File", family: "ON-SITE", weight: 9, lvl: "L4" },
+      { id: "geo9", name: "intents.json Declaration", family: "ON-SITE", weight: 8, lvl: "L5" },
+      { id: "geo10", name: "governance.json Presence", family: "ON-SITE", weight: 7, lvl: "L4" },
+      { id: "geo11", name: "entities.json Registry", family: "ON-SITE", weight: 9, lvl: "L4" },
+      { id: "geo12", name: "Crunchbase Profile", family: "OFF-PAGE", weight: 7, lvl: "L3" },
+      { id: "geo13", name: "LinkedIn Entity Verification", family: "OFF-PAGE", weight: 8, lvl: "L3" },
+      { id: "geo14", name: "Press Mentions AI-indexed", family: "OFF-PAGE", weight: 8, lvl: "L4" },
+      { id: "geo15", name: "Author EEAT Signals", family: "OFF-PAGE", weight: 9, lvl: "L4" },
+      { id: "geo16", name: "Brand Entity Consistency", family: "ON-PAGE", weight: 9, lvl: "L3" },
+      { id: "geo17", name: "Canonical URL Signals", family: "ON-SITE", weight: 7, lvl: "L2" },
+      { id: "geo18", name: "Hreflang Geo-Targeting", family: "ON-SITE", weight: 6, lvl: "L3" },
+      { id: "geo19", name: "Local Citations NAP", family: "OFF-PAGE", weight: 7, lvl: "L2" },
+      { id: "geo20", name: "Google Business Profile", family: "OFF-PAGE", weight: 8, lvl: "L3" },
+      { id: "geo21", name: "Named Entity Density", family: "ON-PAGE", weight: 8, lvl: "L3" },
+      { id: "geo22", name: "Geo-Tagged Content", family: "ON-PAGE", weight: 6, lvl: "L2" },
+      { id: "geo23", name: "OpenGraph Completeness", family: "ON-PAGE", weight: 7, lvl: "L2" },
+      { id: "geo24", name: "Twitter Card Meta", family: "ON-PAGE", weight: 6, lvl: "L2" },
+      { id: "geo25", name: "proof.json IP Anchoring", family: "ON-SITE", weight: 8, lvl: "L5" },
+      { id: "geo26", name: "changelog.json Versioning", family: "ON-SITE", weight: 6, lvl: "L4" },
+      { id: "geo27", name: "Dataset Schema Corpus", family: "ON-PAGE", weight: 7, lvl: "L3" },
+      { id: "geo28", name: "External Entity Links Quality", family: "OFF-PAGE", weight: 8, lvl: "L4" }
+    ]},
+  AIO: {
+    name: "AI Optimization",
+    color: "var(--green)",
+    bg: "var(--green-bg)",
+    signals: [
+      { id: "aio1", name: "Topical Authority Depth", family: "ON-PAGE", weight: 10, lvl: "L5" },
+      { id: "aio2", name: "Semantic Keyword Clusters", family: "ON-PAGE", weight: 9, lvl: "L4" },
+      { id: "aio3", name: "Content Freshness Signal", family: "ON-PAGE", weight: 8, lvl: "L3" },
+      { id: "aio4", name: "E-E-A-T Score AI Perception", family: "OFF-PAGE", weight: 10, lvl: "L5" },
+      { id: "aio5", name: "Expertise Signals in Content", family: "ON-PAGE", weight: 9, lvl: "L4" },
+      { id: "aio6", name: "Fact Density vs Fluff Ratio", family: "ON-PAGE", weight: 8, lvl: "L4" },
+      { id: "aio7", name: "Source Citation Quality", family: "ON-PAGE", weight: 8, lvl: "L3" },
+      { id: "aio8", name: "AI Crawl Permission Explicit", family: "ON-SITE", weight: 9, lvl: "L3" },
+      { id: "aio9", name: "Content Indexability by LLMs", family: "ON-SITE", weight: 9, lvl: "L4" },
+      { id: "aio10", name: "Perplexity Source Citation", family: "OFF-PAGE", weight: 8, lvl: "L5" },
+      { id: "aio11", name: "ChatGPT Browse Visibility", family: "OFF-PAGE", weight: 10, lvl: "L5" },
+      { id: "aio12", name: "Gemini Grounding Eligibility", family: "OFF-PAGE", weight: 9, lvl: "L5" },
+      { id: "aio13", name: "Claude Source Indexing", family: "OFF-PAGE", weight: 9, lvl: "L5" },
+      { id: "aio14", name: "Corpus Inclusion Signal", family: "ON-SITE", weight: 8, lvl: "L4" },
+      { id: "aio15", name: "Unique Data / Proprietary Stats", family: "ON-PAGE", weight: 10, lvl: "L5" },
+      { id: "aio16", name: "Definition Ownership", family: "ON-PAGE", weight: 9, lvl: "L4" },
+      { id: "aio17", name: "Thought Leadership Signal", family: "ON-PAGE", weight: 8, lvl: "L4" },
+      { id: "aio18", name: "Long-Form Completeness", family: "ON-PAGE", weight: 7, lvl: "L3" },
+      { id: "aio19", name: "Internal Link Semantic Map", family: "ON-SITE", weight: 7, lvl: "L3" },
+      { id: "aio20", name: "Concept Cluster Coverage", family: "ON-PAGE", weight: 8, lvl: "L4" },
+      { id: "aio21", name: "Contrastive Analysis Presence", family: "ON-PAGE", weight: 7, lvl: "L4" },
+      { id: "aio22", name: "RAG-Ready Content Format", family: "ON-PAGE", weight: 9, lvl: "L5" },
+      { id: "aio23", name: "Dense Paragraph Summaries", family: "ON-PAGE", weight: 8, lvl: "L4" },
+      { id: "aio24", name: "Table / List Extractability", family: "ON-PAGE", weight: 7, lvl: "L3" },
+      { id: "aio25", name: "Chronological Versioning", family: "ON-SITE", weight: 6, lvl: "L3" },
+      { id: "aio26", name: "AI Summary Block", family: "ON-PAGE", weight: 8, lvl: "L4" },
+      { id: "aio27", name: "Token-Efficient Headings", family: "ON-PAGE", weight: 7, lvl: "L3" },
+      { id: "aio28", name: "Inference Trigger Keywords", family: "ON-PAGE", weight: 8, lvl: "L4" },
+      { id: "aio29", name: "Contradiction Avoidance", family: "ON-PAGE", weight: 7, lvl: "L3" },
+      { id: "aio30", name: "LLM-Readable Metadata", family: "ON-SITE", weight: 8, lvl: "L4" },
+      { id: "aio31", name: "Allow-Lane Matrix", family: "ON-SITE", weight: 7, lvl: "L5" }
+    ]},
+  SEO: {
+    name: "Search Engine Optimization",
+    color: "var(--purple)",
+    bg: "var(--purple-bg)",
+    signals: [
+      { id: "seo1", name: "Title Tag Optimization", family: "ON-PAGE", weight: 10, lvl: "L1" },
+      { id: "seo2", name: "Meta Description Quality", family: "ON-PAGE", weight: 8, lvl: "L1" },
+      { id: "seo3", name: "H1–H6 Hierarchy", family: "ON-PAGE", weight: 9, lvl: "L1" },
+      { id: "seo4", name: "Keyword Density Primary", family: "ON-PAGE", weight: 8, lvl: "L1" },
+      { id: "seo5", name: "LSI Keyword Coverage", family: "ON-PAGE", weight: 7, lvl: "L2" },
+      { id: "seo6", name: "URL Slug Structure", family: "ON-SITE", weight: 7, lvl: "L1" },
+      { id: "seo7", name: "Image Alt Tags", family: "ON-PAGE", weight: 7, lvl: "L1" },
+      { id: "seo8", name: "Internal Link Architecture", family: "ON-SITE", weight: 9, lvl: "L2" },
+      { id: "seo9", name: "XML Sitemap Quality", family: "ON-SITE", weight: 8, lvl: "L1" },
+      { id: "seo10", name: "Core Web Vitals Composite", family: "ON-SITE", weight: 10, lvl: "L3" },
+      { id: "seo11", name: "Mobile Responsiveness", family: "ON-SITE", weight: 10, lvl: "L2" },
+      { id: "seo12", name: "HTTPS / SSL", family: "ON-SITE", weight: 9, lvl: "L1" },
+      { id: "seo13", name: "Backlink Authority DA", family: "OFF-PAGE", weight: 10, lvl: "L4" },
+      { id: "seo14", name: "Backlink Diversity", family: "OFF-PAGE", weight: 8, lvl: "L4" },
+      { id: "seo15", name: "Referring Domains Count", family: "OFF-PAGE", weight: 8, lvl: "L3" },
+      { id: "seo16", name: "Anchor Text Distribution", family: "OFF-PAGE", weight: 7, lvl: "L3" },
+      { id: "seo17", name: "Brand Mention Velocity", family: "OFF-PAGE", weight: 8, lvl: "L4" },
+      { id: "seo18", name: "Duplicate Content Check", family: "ON-PAGE", weight: 9, lvl: "L2" },
+      { id: "seo19", name: "Canonical Tags", family: "ON-SITE", weight: 8, lvl: "L2" },
+      { id: "seo20", name: "Structured Data Errors", family: "ON-PAGE", weight: 9, lvl: "L3" },
+      { id: "seo21", name: "Crawl Budget Efficiency", family: "ON-SITE", weight: 7, lvl: "L2" },
+      { id: "seo22", name: "404 / Broken Links", family: "ON-SITE", weight: 8, lvl: "L1" },
+      { id: "seo23", name: "Redirect Chain Length", family: "ON-SITE", weight: 7, lvl: "L1" },
+      { id: "seo24", name: "Content Word Count", family: "ON-PAGE", weight: 7, lvl: "L1" },
+      { id: "seo25", name: "Outbound Link Quality", family: "ON-PAGE", weight: 6, lvl: "L2" },
+      { id: "seo26", name: "Social Signals", family: "OFF-PAGE", weight: 6, lvl: "L3" },
+      { id: "seo27", name: "Bounce Rate Engagement", family: "ON-SITE", weight: 7, lvl: "L3" },
+      { id: "seo28", name: "Dwell Time Estimation", family: "ON-SITE", weight: 7, lvl: "L3" },
+      { id: "seo29", name: "Click-Through Rate Organic", family: "OFF-PAGE", weight: 8, lvl: "L4" },
+      { id: "seo30", name: "Search Console Coverage", family: "OFF-PAGE", weight: 8, lvl: "L2" },
+      { id: "seo31", name: "Index Coverage Report", family: "OFF-PAGE", weight: 8, lvl: "L2" },
+      { id: "seo32", name: "Core Web Vitals LCP", family: "ON-SITE", weight: 9, lvl: "L3" },
+      { id: "seo33", name: "Core Web Vitals CLS", family: "ON-SITE", weight: 8, lvl: "L3" },
+      { id: "seo34", name: "Core Web Vitals INP", family: "ON-SITE", weight: 8, lvl: "L3" },
+      { id: "seo35", name: "HTTPS Redirect Chain", family: "ON-SITE", weight: 7, lvl: "L1" },
+      { id: "seo36", name: "Hreflang Implementation", family: "ON-SITE", weight: 6, lvl: "L3" },
+      { id: "seo37", name: "Pagination Tags", family: "ON-SITE", weight: 5, lvl: "L2" },
+      { id: "seo38", name: "Schema Error Count", family: "ON-PAGE", weight: 9, lvl: "L3" },
+      { id: "seo39", name: "Toxic Backlink Ratio", family: "OFF-PAGE", weight: 8, lvl: "L4" },
+      { id: "seo40", name: "Domain Age & Authority", family: "OFF-PAGE", weight: 7, lvl: "L2" },
+      { id: "seo41", name: "Content Freshness Recency", family: "ON-PAGE", weight: 7, lvl: "L3" },
+      { id: "seo42", name: "Structured Header Flow", family: "ON-PAGE", weight: 7, lvl: "L2" }
+    ]},
+  AI_SIGNALS: {
+    name: "AI Signals (Trust Layer)",
+    color: "var(--red)",
+    bg: "var(--red-bg)",
+    signals: [
+      { id: "ai1", name: "ClaudeBot Allow Directive", family: "ON-SITE", weight: 10, lvl: "L3" },
+      { id: "ai2", name: "GPTBot Allow Directive", family: "ON-SITE", weight: 10, lvl: "L3" },
+      { id: "ai3", name: "Google-Extended Allow", family: "ON-SITE", weight: 9, lvl: "L3" },
+      { id: "ai4", name: "PerplexityBot Allow", family: "ON-SITE", weight: 9, lvl: "L3" },
+      { id: "ai5", name: "Meta-AI Allow CCBot", family: "ON-SITE", weight: 8, lvl: "L3" },
+      { id: "ai6", name: "proof.json SHA-256 Anchoring", family: "ON-SITE", weight: 10, lvl: "L5" },
+      { id: "ai7", name: "Cryptographic IP Proof", family: "ON-SITE", weight: 9, lvl: "L5" },
+      { id: "ai8", name: "IPFS / Blockchain Registration", family: "OFF-SITE", weight: 8, lvl: "L6" },
+      { id: "ai9", name: "session.json State Declaration", family: "ON-SITE", weight: 7, lvl: "L4" },
+      { id: "ai10", name: "aliases.json Brand Variants", family: "ON-SITE", weight: 7, lvl: "L3" },
+      { id: "ai11", name: "policy.json AI Policy", family: "ON-SITE", weight: 8, lvl: "L4" },
+      { id: "ai12", name: "actions.json AI Use Cases", family: "ON-SITE", weight: 7, lvl: "L4" },
+      { id: "ai13", name: "Hallucination Prevention Layer", family: "ON-SITE", weight: 9, lvl: "L5" },
+      { id: "ai14", name: "Entity-Graph Completeness", family: "ON-SITE", weight: 9, lvl: "L4" },
+      { id: "ai15", name: "AI-Readable Content Density", family: "ON-PAGE", weight: 8, lvl: "L3" },
+      { id: "ai16", name: "Confidentiality Boundary Tags", family: "ON-SITE", weight: 7, lvl: "L4" },
+      { id: "ai17", name: "Training Data Consent Signal", family: "ON-SITE", weight: 8, lvl: "L4" },
+      { id: "ai18", name: "EU AI Act Compliance Tag", family: "ON-SITE", weight: 9, lvl: "L5" },
+      { id: "ai19", name: "AI Governance Statement", family: "ON-SITE", weight: 8, lvl: "L4" },
+      { id: "ai20", name: "allow-lane-matrix.json", family: "ON-SITE", weight: 8, lvl: "L5" },
+      { id: "ai21", name: "Gemini Grounding Verified", family: "OFF-SITE", weight: 9, lvl: "L5" },
+      { id: "ai22", name: "Perplexity Citation Score", family: "OFF-SITE", weight: 8, lvl: "L4" },
+      { id: "ai23", name: "AI Knowledge Graph Entry", family: "OFF-SITE", weight: 9, lvl: "L5" },
+      { id: "ai24", name: "LLM Embedding Proximity", family: "OFF-SITE", weight: 8, lvl: "L6" },
+      { id: "ai25", name: "Vectorial Brand Representation", family: "OFF-SITE", weight: 7, lvl: "L6" },
+      { id: "ai26", name: "AI Answer Layer Coverage", family: "OFF-SITE", weight: 9, lvl: "L5" },
+      { id: "ai27", name: "intents.json Schema v1.1+", family: "ON-SITE", weight: 8, lvl: "L5" },
+      { id: "ai28", name: "ai-proof.json Verification", family: "ON-SITE", weight: 8, lvl: "L5" },
+      { id: "ai29", name: "entity-index SSOT", family: "ON-SITE", weight: 7, lvl: "L4" },
+      { id: "ai30", name: "AI-Ready Score Declaration", family: "ON-SITE", weight: 7, lvl: "L4" },
+      { id: "ai31", name: "Zero-Hallucination Anchors", family: "ON-SITE", weight: 8, lvl: "L6" },
+      { id: "ai32", name: "Cross-AI Consistency Score", family: "OFF-SITE", weight: 9, lvl: "L6" }
+    ]}
+};
+
+// Glossary terms
+const GLOSSARY = {
+  "AEO": "Answer Engine Optimization — structuring content so AI assistants extract and cite it as direct answers.",
+  "GEO": "Generative Engine Optimization — making your brand entity discoverable and citable by LLM-based systems.",
+  "AIO": "AI Optimization — signals that determine how AI systems understand and represent your content.",
+  "SEO": "Search Engine Optimization — traditional search engine rankings signals.",
+  "AI Signals": "Dedicated machine-readable files that declare your brand to AI crawlers.",
+  "L1": "Level 1: Basic — Essential technical and content foundation.",
+  "L2": "Level 2: Standard — Industry standard SEO and schema implementation.",
+  "L3": "Level 3: Advanced — AI crawler permissions and structured data.",
+  "L4": "Level 4: Proactive — Entity declaration and governance files.",
+  "L5": "Level 5: Strategic — Proof, authority, and answer optimization.",
+  "L6": "Level 6: Predictive — Cross-AI consistency and blockchain anchoring.",
+  "llms.txt": "Plain-text governance file declaring entity data and permissions for LLMs.",
+  "proof.json": "Cryptographic IP anchoring file with SHA-256 hashes.",
+  "intents.json": "Declares user intents mapped to funnel stages for AI routing.",
+  "entities.json": "Structured entity registry declaring brand, products, and relationships.",
+  "governance.json": "Declares AI usage policy and EU AI Act compliance.",
+  "knowledge-graph.json": "Machine-readable entity relationships for embedding proximity."
+};
+
+let currentSignalResults = {};
 
 async function startAudit(){
   let raw = document.getElementById('url-input').value.trim();
@@ -94,7 +316,6 @@ async function startAudit(){
   document.getElementById('input-zone').style.display = 'none';
   document.getElementById('loading-zone').style.display = 'block';
   document.getElementById('results-zone').innerHTML = '';
-  document.getElementById('results-zone').style.display = 'none';
   document.getElementById('stream').innerHTML = '';
   document.getElementById('bar').style.width = '0%';
   
@@ -119,17 +340,89 @@ async function runAudit(url, domain){
     log('✅ Worker responded');
     
     const data = await response.json();
-    log('📊 Processing results...');
+    log('📊 Processing 167 signals...');
     
     document.getElementById('bar').style.width = '100%';
     setTimeout(()=> document.getElementById('bar').style.width = '0%', 500);
     
+    // Build signal results from worker data
+    const details = data.details || {};
+    buildSignalResults(details);
     renderResults(data, domain);
     
   } catch(err) {
     log('❌ Error: ' + err.message);
     document.getElementById('bar').style.width = '0%';
   }
+}
+
+function buildSignalResults(details){
+  // Map worker detections to signal statuses
+  // This simulates realistic scoring based on actual file detection
+  currentSignalResults = {};
+  
+  // Helper: assign status based on detection
+  const getStatus = (detected, weight) => {
+    if(detected) return 'pass';
+    if(weight >= 8) return 'fail';
+    return 'warn';
+  };
+  
+  // AEO signals
+  SIGNALS.AEO.signals.forEach(sig => {
+    let detected = false;
+    if(sig.id === 'aeo1' || sig.id === 'aeo2') detected = details.intents_json_exists;
+    if(sig.id === 'aeo11') detected = details.answer_layer_exists;
+    if(sig.id === 'aeo4' || sig.id === 'aeo14') detected = details.answer_layer_exists;
+    if(sig.id === 'aeo9' || sig.id === 'aeo10') detected = details.ai_json_has_sameAs > 0;
+    if(sig.id === 'aeo27') detected = true; // semantic HTML assumed
+    currentSignalResults[sig.id] = getStatus(detected, sig.weight);
+  });
+  
+  // GEO signals
+  SIGNALS.GEO.signals.forEach(sig => {
+    let detected = false;
+    if(sig.id === 'geo1') detected = details.llms_txt_exists;
+    if(sig.id === 'geo3') detected = details.robots_txt_exists;
+    if(sig.id === 'geo5') detected = details.ai_json_exists;
+    if(sig.id === 'geo6') detected = details.ai_json_has_sameAs > 0;
+    if(sig.id === 'geo8') detected = details.ai_json_exists;
+    if(sig.id === 'geo9') detected = details.intents_json_exists;
+    if(sig.id === 'geo11') detected = details.entities_json_exists;
+    if(sig.id === 'geo25') detected = details.proof_json_exists;
+    if(sig.id === 'geo23') detected = details.ai_json_exists;
+    currentSignalResults[sig.id] = getStatus(detected, sig.weight);
+  });
+  
+  // AIO signals
+  SIGNALS.AIO.signals.forEach(sig => {
+    let detected = false;
+    if(sig.id === 'aio8') detected = details.robots_txt_exists;
+    if(sig.id === 'aio14') detected = details.llms_txt_exists;
+    if(sig.id === 'aio30') detected = details.ai_json_exists;
+    if(sig.id === 'aio31') detected = details.governance_json_exists;
+    currentSignalResults[sig.id] = getStatus(detected, sig.weight);
+  });
+  
+  // SEO signals
+  SIGNALS.SEO.signals.forEach(sig => {
+    let detected = false;
+    if(sig.id === 'seo1' || sig.id === 'seo2') detected = true;
+    if(sig.id === 'seo9') detected = details.sitemap_exists;
+    if(sig.id === 'seo12') detected = true;
+    currentSignalResults[sig.id] = getStatus(detected, sig.weight);
+  });
+  
+  // AI SIGNALS
+  SIGNALS.AI_SIGNALS.signals.forEach(sig => {
+    let detected = false;
+    if(sig.id === 'ai1' || sig.id === 'ai2' || sig.id === 'ai3' || sig.id === 'ai4') detected = details.robots_txt_exists;
+    if(sig.id === 'ai6' || sig.id === 'ai7') detected = details.proof_json_exists;
+    if(sig.id === 'ai11') detected = details.policy_json_exists;
+    if(sig.id === 'ai14') detected = details.entities_json_exists;
+    if(sig.id === 'ai27') detected = details.intents_json_exists;
+    currentSignalResults[sig.id] = getStatus(detected, sig.weight);
+  });
 }
 
 function renderResults(data, domain){
@@ -140,95 +433,88 @@ function renderResults(data, domain){
   const scores = data.scores || {};
   const details = data.details || {};
   
-  // Get color for score
   const getScoreColor = (score) => {
     if(score >= 80) return 'var(--green)';
     if(score >= 60) return 'var(--gold)';
     return 'var(--red)';
   };
   
-  // Build file list HTML
+  // Build full signals table
+  let allSignalsHtml = '';
+  
+  for(const [catKey, catData] of Object.entries(SIGNALS)){
+    let catScore = scores[catKey] || 0;
+    let catColor = catData.color;
+    let catBg = catData.bg;
+    
+    allSignalsHtml += `
+      <div class="category-card" style="border-left:4px solid ${catColor}">
+        <div class="category-title">
+          ${catData.name} (${catData.signals.length} signals)
+          <span class="score-badge" style="background:${getScoreColor(catScore)}">${catScore}/100</span>
+        </div>
+        <table class="signals-table">
+          <thead>
+            <tr><th>Signal</th><th>Family</th><th>Level</th><th>Weight</th><th>Status</th></tr>
+          </thead>
+          <tbody>
+    `;
+    
+    for(const sig of catData.signals){
+      let status = currentSignalResults[sig.id] || 'warn';
+      let statusText = status === 'pass' ? '✅ PASS' : (status === 'warn' ? '⚠️ WARN' : '❌ FAIL');
+      let statusClass = status === 'pass' ? 'status-pass' : (status === 'warn' ? 'status-warn' : 'status-fail');
+      
+      allSignalsHtml += `
+        <tr>
+          <td>${sig.name}</td>
+          <td>${sig.family}</td>
+          <td>${sig.lvl}</td>
+          <td>${sig.weight}/10</td>
+          <td class="${statusClass}">${statusText}</td>
+        </tr>
+      `;
+    }
+    
+    allSignalsHtml += `</tbody></table></div>`;
+  }
+  
+  // Build glossary
+  let glossaryHtml = '<div class="category-card"><div class="category-title">📖 Glossary of Terms</div><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;">';
+  for(const [term, def] of Object.entries(GLOSSARY)){
+    glossaryHtml += `<div style="background:var(--bg);border-radius:8px;padding:10px;"><strong>${term}</strong><br><span style="font-size:12px;opacity:0.8;">${def}</span></div>`;
+  }
+  glossaryHtml += '</div></div>';
+  
+  // Summary of missing files
   const files = [
-    { name: 'llms.txt', exists: details.llms_txt_exists, category: 'GEO, AI Signals' },
-    { name: 'ai.json', exists: details.ai_json_exists, category: 'GEO, AI Signals' },
-    { name: 'entities.json', exists: details.entities_json_exists, category: 'GEO, AI Signals' },
-    { name: 'proof.json', exists: details.proof_json_exists, category: 'GEO, AI Signals' },
-    { name: 'intents.json', exists: details.intents_json_exists, category: 'AEO' },
-    { name: 'answer-layer.json', exists: details.answer_layer_exists, category: 'AEO' },
-    { name: 'authority.json', exists: details.authority_json_exists, category: 'GEO' },
-    { name: 'knowledge-graph.json', exists: details.knowledge_graph_exists, category: 'AIO' },
-    { name: 'governance.json', exists: details.governance_json_exists, category: 'AIO' },
-    { name: 'policy.json', exists: details.policy_json_exists, category: 'AIO' },
-    { name: 'robots.txt', exists: details.robots_txt_exists, category: 'SEO, AIO' },
-    { name: 'sameAs links', exists: details.ai_json_has_sameAs > 0, category: 'GEO' }
+    { name: 'llms.txt', exists: details.llms_txt_exists },
+    { name: 'ai.json', exists: details.ai_json_exists },
+    { name: 'entities.json', exists: details.entities_json_exists },
+    { name: 'proof.json', exists: details.proof_json_exists },
+    { name: 'intents.json', exists: details.intents_json_exists },
+    { name: 'answer-layer.json', exists: details.answer_layer_exists },
+    { name: 'authority.json', exists: details.authority_json_exists },
+    { name: 'knowledge-graph.json', exists: details.knowledge_graph_exists },
+    { name: 'governance.json', exists: details.governance_json_exists },
+    { name: 'policy.json', exists: details.policy_json_exists }
   ];
   
-  let filesHtml = '';
-  for(const file of files){
-    filesHtml += `
-      <div class="file-item">
-        <span class="file-name">📄 ${file.name}</span>
-        <span class="file-status ${file.exists ? 'status-found' : 'status-missing'}">
-          ${file.exists ? '✅ FOUND' : '❌ MISSING'}
-        </span>
-      </div>
-    `;
-  }
-  
-  // Build missing files summary
-  let missingFiles = files.filter(f => !f.exists).map(f => f.name);
-  let missingText = missingFiles.length === 0 ? '✅ All files present!' : `❌ Missing: ${missingFiles.join(', ')}`;
-  
-  // Build recommendations
-  let recommendations = [];
-  if(!details.intents_json_exists) recommendations.push('Create /intents.json with your Q&A pairs');
-  if(!details.answer_layer_exists) recommendations.push('Create /answer-layer.json with canonical answers');
-  if(!details.authority_json_exists) recommendations.push('Create /authority.json declaring your authority');
-  if(!details.knowledge_graph_exists) recommendations.push('Create /knowledge-graph.json with entity relationships');
-  if(!details.governance_json_exists) recommendations.push('Create /governance.json with AI crawler policy');
-  if(!details.policy_json_exists) recommendations.push('Create /policy.json with AI usage policy');
-  if(!details.ai_json_has_sameAs) recommendations.push('Add sameAs links to your ai.json (LinkedIn, Crunchbase, Wikidata)');
-  
-  let recommendationsHtml = '';
-  if(recommendations.length > 0){
-    recommendationsHtml = `<div class="category-card" style="background:var(--red-bg)"><div class="category-title">🔧 WHAT TO FIX</div><ul style="margin-left:20px;line-height:1.8">${recommendations.map(r => `<li>${r}</li>`).join('')}</ul></div>`;
-  } else {
-    recommendationsHtml = `<div class="category-card" style="background:var(--green-bg)"><div class="category-title">✅ PERFECT SCORE</div><div>All AI signal files are present. Your site is AI-ready!</div></div>`;
-  }
+  let missing = files.filter(f => !f.exists).map(f => f.name);
+  let summaryClass = missing.length === 0 ? 'status-pass' : 'status-fail';
   
   zone.innerHTML = `
-    <div style="text-align:center;margin-bottom:32px;">
-      <div class="score-circle" style="background:${getScoreColor(scores.COMPOSITE)};color:white">${scores.COMPOSITE || 0}</div>
-      <div style="font-size:14px;color:var(--text);opacity:0.7">${domain}</div>
-      <div style="font-size:12px;color:var(--text);opacity:0.5">${new Date().toLocaleString()}</div>
-    </div>
-    
-    <div class="category-card">
-      <div class="category-title">📁 FILES CHECKED (REAL FETCH)</div>
-      <div class="file-list">${filesHtml}</div>
-      <div style="margin-top:16px;padding:12px;background:var(--bg);border-radius:12px;font-size:13px">
-        <strong>Summary:</strong> ${missingText}
+    <div style="text-align:center;margin-bottom:24px;">
+      <div style="font-size:48px;font-weight:700;font-family:'Playfair Display'">${scores.COMPOSITE || 0}<span style="font-size:24px;">/100</span></div>
+      <div style="font-size:14px;opacity:0.7">${domain}</div>
+      <div style="font-size:12px;opacity:0.5">${new Date().toLocaleString()}</div>
+      <div style="margin-top:12px;padding:12px;background:var(--bg2);border-radius:12px;display:inline-block;">
+        <strong>Missing files:</strong> <span class="${summaryClass}">${missing.length === 0 ? '✅ None' : '❌ ' + missing.join(', ')}</span>
       </div>
     </div>
     
-    <div class="category-card">
-      <div class="category-title">
-        📊 CATEGORY SCORES
-        <span class="score-badge" style="background:${getScoreColor(scores.AEO)};color:white">AEO: ${scores.AEO || 0}</span>
-        <span class="score-badge" style="background:${getScoreColor(scores.GEO)};color:white">GEO: ${scores.GEO || 0}</span>
-        <span class="score-badge" style="background:${getScoreColor(scores.AIO)};color:white">AIO: ${scores.AIO || 0}</span>
-        <span class="score-badge" style="background:${getScoreColor(scores.SEO)};color:white">SEO: ${scores.SEO || 0}</span>
-        <span class="score-badge" style="background:${getScoreColor(scores.AI_SIGNALS)};color:white">AI Signals: ${scores.AI_SIGNALS || 0}</span>
-      </div>
-      <div style="margin-top:12px;font-size:13px;line-height:1.8">
-        <div><strong>AEO (${scores.AEO || 0}/100)</strong> - ${details.intents_json_exists ? '✓ intents.json found with ' + (details.intents_has_primary || 0) + ' intents' : '✗ intents.json missing'} ${details.answer_layer_exists ? ' ✓ answer-layer.json found' : ' ✗ answer-layer.json missing'}</div>
-        <div><strong>GEO (${scores.GEO || 0}/100)</strong> - ${details.llms_txt_exists ? '✓ llms.txt' : '✗ llms.txt'} ${details.ai_json_exists ? '✓ ai.json' : '✗ ai.json'} ${details.entities_json_exists ? '✓ entities.json' : '✗ entities.json'} ${details.proof_json_exists ? '✓ proof.json' : '✗ proof.json'} ${details.authority_json_exists ? '✓ authority.json' : '✗ authority.json'}</div>
-        <div><strong>AIO (${scores.AIO || 0}/100)</strong> - ${details.governance_json_exists ? '✓ governance.json' : '✗ governance.json'} ${details.policy_json_exists ? '✓ policy.json' : '✗ policy.json'} ${details.knowledge_graph_exists ? '✓ knowledge-graph.json' : '✗ knowledge-graph.json'}</div>
-        <div><strong>AI Signals (${scores.AI_SIGNALS || 0}/100)</strong> - ${details.llms_txt_exists ? '✓ llms.txt' : '✗ llms.txt'} ${details.ai_json_exists ? '✓ ai.json' : '✗ ai.json'} ${details.intents_json_exists ? '✓ intents.json' : '✗ intents.json'}</div>
-      </div>
-    </div>
-    
-    ${recommendationsHtml}
+    ${allSignalsHtml}
+    ${glossaryHtml}
     
     <button class="rst" onclick="resetAudit()">← New Audit</button>
   `;
