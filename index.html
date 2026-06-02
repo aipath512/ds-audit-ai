@@ -1,33 +1,51 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>API TEST</title>
+<title>AUDIT-AI - REAL</title>
 <style>
-body{font-family:monospace;padding:20px}
-input{padding:10px;width:300px}
-button{padding:10px}
-pre{background:#f0f0f0;padding:20px;margin-top:20px}
+body{font-family:sans-serif;max-width:800px;margin:50px auto;padding:20px}
+input{padding:12px;width:70%}
+button{padding:12px 24px}
+pre{background:#f0f0f0;padding:20px;overflow:auto}
+.good{color:green}
+.bad{color:red}
 </style>
 </head>
 <body>
-<h1>Claude API Test</h1>
-<input type="text" id="url" placeholder="example.com">
-<button onclick="testAPI()">Call API</button>
-<pre id="result">Result will appear here</pre>
+<h1>AUDIT-AI™ REAL</h1>
+<p>Checks REAL files on any website</p>
+<input type="text" id="url" placeholder="5thelement.ai">
+<button onclick="runAudit()">Run REAL Audit</button>
+<pre id="result">Results will appear here</pre>
 
 <script>
-async function testAPI() {
-  const url = document.getElementById('url').value;
-  document.getElementById('result').innerText = 'Calling /api/audit...';
+async function runAudit() {
+  const domain = document.getElementById('url').value;
+  document.getElementById('result').innerText = 'Scanning ' + domain + '...';
   
-  const res = await fetch('/api/audit', {
+  const res = await fetch('https://audit-worker.aipath512.workers.dev', {
     method: 'POST',
     headers: {'Content-Type':'application/json'},
-    body: JSON.stringify({url: url})
+    body: JSON.stringify({url: 'https://' + domain})
   });
   
-  const text = await res.text();
-  document.getElementById('result').innerText = text;
+  const data = await res.json();
+  
+  let output = `DOMAIN: ${data.domain}\n`;
+  output += `SCORE: ${data.score}/100\n`;
+  output += `\n📁 FILES CHECKED:\n`;
+  output += `  robots.txt: ${data.signals.robots_txt.exists ? '✅' : '❌'}\n`;
+  output += `  llms.txt: ${data.signals.llms_txt.exists ? '✅' : '❌'}\n`;
+  output += `  ai.json: ${data.signals.ai_json.exists ? '✅' : '❌'}\n`;
+  output += `  entities.json: ${data.signals.entities_json.exists ? '✅' : '❌'}\n`;
+  output += `  proof.json: ${data.signals.proof_json.exists ? '✅' : '❌'}\n`;
+  output += `  sitemap.xml: ${data.signals.sitemap_xml.exists ? '✅' : '❌'}\n`;
+  output += `\n🤖 AI CRAWLER RULES:\n`;
+  output += `  ClaudeBot: ${data.signals.ai_crawler_rules.claudebot}\n`;
+  output += `  GPTBot: ${data.signals.ai_crawler_rules.gptbot}\n`;
+  output += `  Google-Extended: ${data.signals.ai_crawler_rules.google_extended}\n`;
+  
+  document.getElementById('result').innerText = output;
 }
 </script>
 </body>
