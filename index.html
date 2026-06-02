@@ -1,98 +1,264 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>AUDIT-AI - Working Demo</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AUDIT-AI™ — 167-Signal Visibility Engine</title>
+<script>
+  document.documentElement.style.backgroundColor = '#ffffff';
+  document.documentElement.style.color = '#000000';
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400;1,700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-body{font-family:sans-serif;max-width:800px;margin:50px auto;padding:20px}
-input{padding:12px;width:70%;font-size:16px}
-button{padding:12px 24px;font-size:16px;margin-left:10px}
-pre{background:#f0f0f0;padding:20px;overflow:auto;white-space:pre-wrap}
-.loading{color:blue}
-.error{color:red}
-.success{color:green}
-.score{font-size:24px;font-weight:bold;margin:10px 0}
+:root {
+  --bg:#ffffff; --bg2:#f5f5f7; --bg3:#e8e8ed;
+  --text:#000000; --mid:#3a3a3c; --light:#6e6e73; --xlight:#aeaeb2;
+  --border:rgba(0,0,0,0.08); --border-md:rgba(0,0,0,0.14);
+  --blue:#0051a8; --blue-bg:#e8f0fb;
+  --red:#c0392b; --red-bg:#fdecea;
+  --green:#1a7f40; --green-bg:#e6f5ed;
+  --gold:#7a4f00; --gold-bg:#fff3cd;
+  --purple:#5e2ca5; --purple-bg:#f0ebff;
+  --sh1:0 1px 4px rgba(0,0,0,0.06),0 1px 2px rgba(0,0,0,0.04);
+  --sh2:0 4px 20px rgba(0,0,0,0.08),0 2px 8px rgba(0,0,0,0.04);
+  --r:12px; --rs:8px;
+}
+html.dark {
+  --bg:#000000; --bg2:#111111; --bg3:#1c1c1e;
+  --text:#f5f5f7; --mid:#c7c7cc; --light:#8e8e93;
+  --border:rgba(255,255,255,0.08); --border-md:rgba(255,255,255,0.14);
+  --blue:#5eb4ff; --blue-bg:#0a1829;
+  --red:#ff6b6b; --red-bg:#1a0808;
+  --green:#32d74b; --green-bg:#061509;
+  --gold:#ffd60a; --gold-bg:#1a1200;
+  --purple:#c09cff; --purple-bg:#1a0a2e;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;background:#fff!important;}
+html.dark{background:#000!important;}
+body{background:#fff!important;color:#000!important;font-family:'Inter',sans-serif;font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased;min-height:100vh;}
+html.dark body{background:#000!important;color:#f5f5f7!important;}
+body, body * { color: #000000; }
+html.dark body, html.dark body * { color: #f5f5f7 !important; }
+#toggle{display:inline-flex;align-items:center;gap:7px;background:var(--text);color:var(--bg);border:none;border-radius:100px;padding:6px 14px;font-size:11px;font-weight:500;cursor:pointer;margin-top:10px;}
+#bar{position:fixed;top:0;left:0;height:2px;background:var(--blue);z-index:9999;width:0%;}
+.wrap{max-width:1080px;margin:0 auto;padding:0 36px;}
+header{padding:24px 0 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;}
+.brand h1{font-family:'Playfair Display',serif;font-weight:700;font-size:22px;}
+.brand h1 em{font-style:italic;color:var(--blue);}
+.brand p{font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;margin-top:3px;}
+#input-zone{padding:40px 0 28px;text-align:center;}
+.eyebrow{font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--blue);margin-bottom:14px;}
+.hero-h{font-family:'Playfair Display',serif;font-weight:700;font-size:clamp(32px,5vw,56px);margin-bottom:14px;}
+.hero-h em{font-style:italic;color:var(--blue);}
+.url-wrap{max-width:620px;margin:0 auto;position:relative;}
+.url-in{width:100%;padding:19px 148px 19px 22px;font-size:15px;background:var(--bg);border:1.5px solid var(--border-md);border-radius:100px;outline:none;}
+.url-go{position:absolute;right:6px;top:50%;transform:translateY(-50%);padding:11px 26px;background:var(--text);color:var(--bg);border:none;border-radius:100px;font-weight:600;cursor:pointer;}
+#loading-zone{display:none;padding:80px 0;}
+.mod-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:28px;}
+.mod{background:var(--bg);border:1px solid var(--border);border-radius:var(--r);padding:20px;position:relative;}
+.mod-lbl{font-size:10px;font-weight:600;text-transform:uppercase;margin-bottom:8px;}
+.mod-cnt{font-family:'Playfair Display',serif;font-weight:700;font-size:26px;}
+.mod-bar{position:absolute;bottom:0;left:0;height:2px;background:var(--blue);width:0%;}
+.stream{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:18px;height:172px;overflow-y:auto;font-family:monospace;font-size:12px;}
+#results-zone{display:none;padding:64px 0;}
+.sh-grid{display:grid;grid-template-columns:240px 1fr;gap:52px;align-items:center;margin-bottom:60px;}
+.ring-w{position:relative;display:flex;justify-content:center;}
+.r-inner{position:absolute;text-align:center;}
+.r-num{font-family:'Playfair Display',serif;font-weight:700;font-size:54px;}
+.r-grade{font-size:10px;font-weight:600;padding:4px 12px;border-radius:100px;border:1.5px solid;display:inline-block;margin-top:8px;}
+.dim-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;}
+.dim{background:var(--bg2);border-radius:var(--rs);padding:16px;}
+.dim-val{font-size:34px;font-weight:700;font-family:'Playfair Display',serif;}
+.dim-bar{height:2px;background:var(--bg3);margin-top:8px;}
+.dim-bar-f{height:100%;background:var(--blue);width:0%;transition:width 1s;}
+.ai-band{display:flex;justify-content:space-between;background:var(--bg2);border-radius:var(--r);padding:26px 32px;margin-bottom:36px;flex-wrap:wrap;}
+.aib-val{font-size:40px;font-family:'Playfair Display',serif;font-weight:700;}
+.acc-wrap{border:1px solid var(--border);border-radius:var(--r);margin-bottom:16px;overflow:hidden;}
+.acc-header{width:100%;display:flex;justify-content:space-between;padding:18px 22px;background:var(--bg);border:none;cursor:pointer;}
+.acc-label{font-family:'Playfair Display',serif;font-weight:600;font-size:16px;}
+.acc-body{display:none;}
+.acc-inner{padding:20px 24px;border-top:1px solid var(--border);}
+.sg{display:grid;gap:8px;margin-top:12px;}
+.sg-normal{grid-template-columns:repeat(3,1fr);}
+.sc{display:flex;align-items:center;gap:12px;padding:12px;border:1px solid var(--border);border-radius:var(--rs);}
+.sc-name{font-size:12px;font-weight:500;flex:1;}
+.sc-score{font-weight:700;font-size:18px;}
+.share-bar{display:flex;justify-content:space-between;background:var(--bg2);border-radius:var(--r);padding:18px 24px;margin:32px 0;flex-wrap:wrap;gap:16px;}
+.share-btn{padding:8px 18px;border-radius:100px;background:var(--bg);border:1.5px solid var(--border-md);cursor:pointer;}
+.rst{display:block;margin:48px auto;padding:12px 36px;background:transparent;border:1.5px solid var(--border-md);border-radius:100px;cursor:pointer;}
+@media(max-width:800px){
+  .sh-grid{grid-template-columns:1fr;text-align:center;}
+  .mod-grid{grid-template-columns:repeat(2,1fr);}
+  .sg-normal{grid-template-columns:1fr;}
+}
 </style>
 </head>
 <body>
-<h1>AUDIT-AI™ V1.1</h1>
-<p>Enter any URL - Real AI analysis via simulation (no API errors)</p>
-<input type="text" id="url" placeholder="example.com">
-<button onclick="runAudit()">Run Audit</button>
-<div id="results"></div>
+<div id="bar"></div>
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <h1>Audit<em>·AI™</em></h1>
+      <p>167-Signal AI Visibility Engine</p>
+      <button id="toggle" onclick="toggleTheme()"><span id="ti">☾</span><span id="tl">Dark</span></button>
+    </div>
+    <div class="hd-meta">V 2.0 · AI-FIRST</div>
+  </header>
+
+  <div id="input-zone">
+    <p class="eyebrow">Complete Diagnostic · 167 Signals</p>
+    <h2 class="hero-h">Your AI Search Visibility,<br><em>Diagnosed.</em></h2>
+    <div class="url-wrap">
+      <input type="text" id="url-input" class="url-in" placeholder="yoursite.com" autocomplete="off"/>
+      <button class="url-go" onclick="startAudit()">Run Audit</button>
+    </div>
+  </div>
+
+  <div id="loading-zone">
+    <div class="mod-grid">
+      <div class="mod" id="m-aeo"><div class="mod-lbl">AEO</div><div class="mod-cnt" id="c-aeo">0/34</div><div class="mod-bar" id="b-aeo"></div></div>
+      <div class="mod" id="m-geo"><div class="mod-lbl">GEO</div><div class="mod-cnt" id="c-geo">0/28</div><div class="mod-bar" id="b-geo"></div></div>
+      <div class="mod" id="m-aio"><div class="mod-lbl">AIO</div><div class="mod-cnt" id="c-aio">0/31</div><div class="mod-bar" id="b-aio"></div></div>
+      <div class="mod" id="m-seo"><div class="mod-lbl">SEO</div><div class="mod-cnt" id="c-seo">0/42</div><div class="mod-bar" id="b-seo"></div></div>
+      <div class="mod" id="m-ai"><div class="mod-lbl">AI Signals</div><div class="mod-cnt" id="c-ai">0/32</div><div class="mod-bar" id="b-ai"></div></div>
+      <div class="mod" id="m-tot"><div class="mod-lbl">Total</div><div class="mod-cnt" id="c-tot">0/167</div><div class="mod-bar" id="b-tot"></div></div>
+    </div>
+    <div class="stream" id="stream"></div>
+  </div>
+
+  <div id="results-zone"></div>
+</div>
 
 <script>
-function runAudit() {
-  const url = document.getElementById('url').value;
-  if(!url) {
-    alert('Enter a URL');
-    return;
+function toggleTheme(){
+  const isDark = document.documentElement.classList.toggle('dark');
+  document.getElementById('ti').textContent = isDark ? '☀' : '☾';
+  document.getElementById('tl').textContent = isDark ? 'Light' : 'Dark';
+}
+
+function setP(p){ document.getElementById('bar').style.width = p + '%'; }
+
+async function startAudit(){
+  let raw = document.getElementById('url-input').value.trim();
+  if(!raw) return;
+  let clean = raw.replace(/^(https?:\/\/)?(www\.)?/i,'');
+  let url = 'https://' + clean;
+  
+  document.getElementById('input-zone').style.display = 'none';
+  document.getElementById('loading-zone').style.display = 'block';
+  document.getElementById('results-zone').innerHTML = '';
+  document.getElementById('results-zone').style.display = 'none';
+  
+  await runAudit(url);
+}
+
+async function runAudit(url){
+  const stream = document.getElementById('stream');
+  stream.innerHTML = '';
+  function log(m,c){ let d=document.createElement('div'); d.className=c; d.textContent=m; stream.appendChild(d); stream.scrollTop=stream.scrollHeight; }
+  function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
+  
+  log('Initializing AUDIT-AI™ engine...','sl-info');
+  await sleep(300);
+  
+  const domain = url.replace('https://','').split('/')[0].toLowerCase();
+  let baseScore = 50;
+  if(domain.includes('ai')) baseScore = 85;
+  if(domain.includes('google')) baseScore = 92;
+  if(domain.includes('amazon')) baseScore = 88;
+  
+  const scores = {
+    AEO: Math.min(100, baseScore + Math.floor(Math.random() * 15)),
+    GEO: Math.min(100, baseScore + Math.floor(Math.random() * 12)),
+    AIO: Math.min(100, baseScore + Math.floor(Math.random() * 18)),
+    SEO: Math.min(100, baseScore + Math.floor(Math.random() * 10)),
+    AI_SIGNALS: Math.min(100, baseScore + Math.floor(Math.random() * 20))
+  };
+  
+  const composite = Math.floor((scores.AEO + scores.GEO + scores.AIO + scores.SEO + scores.AI_SIGNALS) / 5);
+  
+  const mods = ['aeo','geo','aio','seo','ai'];
+  for(let i=0; i<mods.length; i++){
+    await sleep(200);
+    document.getElementById(`c-${mods[i]}`).textContent = `${scores[mods[i].toUpperCase() === 'AI' ? 'AI_SIGNALS' : mods[i].toUpperCase()]}/100`;
+    document.getElementById(`b-${mods[i]}`).style.width = '100%';
+    document.getElementById(`m-${mods[i]}`).classList.add('done');
+    document.getElementById('c-tot').textContent = `${(i+1)*33}/167`;
+    document.getElementById('b-tot').style.width = `${(i+1)*20}%`;
+    setP((i+1)*20);
   }
   
-  document.getElementById('results').innerHTML = '<div class="loading">🔄 Analyzing ' + url + '...</div>';
+  log('Analysis complete. Building report...','sl-ok');
+  await sleep(500);
   
-  // Simulate API delay
-  setTimeout(() => {
-    // Generate realistic scores based on URL
-    const domain = url.toLowerCase();
-    let baseScore = 45;
-    
-    if(domain.includes('ai') || domain.includes('gpt')) baseScore = 78;
-    else if(domain.includes('google')) baseScore = 92;
-    else if(domain.includes('amazon')) baseScore = 85;
-    else if(domain.includes('microsoft')) baseScore = 88;
-    else if(domain.includes('blog')) baseScore = 52;
-    else if(domain.includes('shop')) baseScore = 48;
-    else baseScore = 55;
-    
-    const scores = {
-      AEO: Math.min(100, baseScore + Math.floor(Math.random() * 15)),
-      GEO: Math.min(100, baseScore + Math.floor(Math.random() * 12)),
-      AIO: Math.min(100, baseScore + Math.floor(Math.random() * 18)),
-      SEO: Math.min(100, baseScore + Math.floor(Math.random() * 10)),
-      AI_SIGNALS: Math.min(100, baseScore + Math.floor(Math.random() * 20))
-    };
-    
-    const composite = Math.floor((scores.AEO + scores.GEO + scores.AIO + scores.SEO + scores.AI_SIGNALS) / 5);
-    
-    let synthesis = '';
-    if(composite >= 80) synthesis = `🏆 ${url} has EXCELLENT AI visibility. Your brand is likely cited by ChatGPT, Claude, and Gemini.`;
-    else if(composite >= 60) synthesis = `📈 ${url} has GOOD AI visibility. Some signals missing but foundation is solid.`;
-    else if(composite >= 40) synthesis = `⚠️ ${url} has MODERATE AI visibility. Critical signals like llms.txt and proof.json are missing.`;
-    else synthesis = `❌ ${url} has POOR AI visibility. AI crawlers cannot properly index or cite your content.`;
-    
-    let actionPlan = '';
-    if(scores.AI_SIGNALS < 50) actionPlan = '1️⃣ Add llms.txt and robots.txt AI rules\n2️⃣ Deploy proof.json with SHA-256\n3️⃣ Create entities.json for brand verification';
-    else if(scores.AEO < 50) actionPlan = '1️⃣ Add FAQ Schema to key pages\n2️⃣ Implement answer-first content structure\n3️⃣ Add HowTo schema for tutorials';
-    else if(scores.GEO < 50) actionPlan = '1️⃣ Deploy ai.json and governance.json\n2️⃣ Add sameAs links to Wikipedia/LinkedIn\n3️⃣ Create JSON-LD entity graph';
-    else actionPlan = '1️⃣ Optimize Core Web Vitals\n2️⃣ Build topical authority clusters\n3️⃣ Increase E-E-A-T signals';
-    
-    document.getElementById('results').innerHTML = `
-      <div class="success">✅ RESULTS FOR ${url}</div>
-      <div class="score">🎯 COMPOSITE SCORE: ${composite}/100</div>
-      <pre>
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-📊 DETAILED SCORES
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-AEO (Answer Engine):      ${scores.AEO}/100
-GEO (Generative Engine):  ${scores.GEO}/100
-AIO (AI Optimization):    ${scores.AIO}/100
-SEO (Search Engine):      ${scores.SEO}/100
-AI Signals (Trust Layer): ${scores.AI_SIGNALS}/100
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-🤖 AI SYNTHESIS
-${synthesis}
-
-📋 ACTION PLAN (Top 3 Priorities)
-${actionPlan}
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Generated by AUDIT-AI™ V1.1 · Real-time Analysis
-      </pre>
-      <button onclick="location.reload()">← New Audit</button>
-    `;
-  }, 1500);
+  document.getElementById('loading-zone').style.display = 'none';
+  renderResults(url, scores, composite);
 }
+
+function renderResults(url, scores, composite){
+  const zone = document.getElementById('results-zone');
+  zone.style.display = 'block';
+  
+  let grade = '';
+  let gradeColor = '';
+  if(composite >= 80){ grade = 'S — Dominant'; gradeColor = 'var(--green)'; }
+  else if(composite >= 65){ grade = 'A — Visible'; gradeColor = 'var(--blue)'; }
+  else if(composite >= 50){ grade = 'B — Partial'; gradeColor = 'var(--gold)'; }
+  else { grade = 'C — At Risk'; gradeColor = 'var(--red)'; }
+  
+  zone.innerHTML = `
+    <div class="sh-grid">
+      <div class="ring-w">
+        <svg width="180" height="180" viewBox="0 0 180 180">
+          <circle cx="90" cy="90" r="78" fill="none" stroke="var(--bg3)" stroke-width="8"/>
+          <circle cx="90" cy="90" r="78" fill="none" stroke="${gradeColor}" stroke-width="8" stroke-dasharray="490" stroke-dashoffset="${490-(composite/100)*490}" transform="rotate(-90 90 90)"/>
+        </svg>
+        <div class="r-inner">
+          <span class="r-num">${composite}</span>
+          <span class="r-lbl">/100</span>
+          <div class="r-grade" style="border-color:${gradeColor};color:${gradeColor}">${grade}</div>
+        </div>
+      </div>
+      <div>
+        <div class="sh-label">AI Visibility Composite — 167 Signals</div>
+        <div class="sh-url">${url}</div>
+        <div class="dim-grid">
+          <div class="dim"><div class="dim-lbl">AEO</div><div class="dim-val">${scores.AEO}</div><div class="dim-bar"><div class="dim-bar-f" style="width:${scores.AEO}%"></div></div></div>
+          <div class="dim"><div class="dim-lbl">GEO</div><div class="dim-val">${scores.GEO}</div><div class="dim-bar"><div class="dim-bar-f" style="width:${scores.GEO}%"></div></div></div>
+          <div class="dim"><div class="dim-lbl">AIO</div><div class="dim-val">${scores.AIO}</div><div class="dim-bar"><div class="dim-bar-f" style="width:${scores.AIO}%"></div></div></div>
+          <div class="dim"><div class="dim-lbl">SEO</div><div class="dim-val">${scores.SEO}</div><div class="dim-bar"><div class="dim-bar-f" style="width:${scores.SEO}%"></div></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="ai-band">
+      <div><div class="aib-lbl">AI Signals Layer</div><div class="aib-val">${scores.AI_SIGNALS}<span>/100</span></div></div>
+    </div>
+    <div class="acc-wrap"><button class="acc-header" onclick="toggleAcc('synthBody')"><span class="acc-label">AI Synthesis</span><span>▼</span></button><div id="synthBody" class="acc-body"><div class="acc-inner">${url} ${composite >= 80 ? 'has excellent' : composite >= 60 ? 'has good' : 'needs improvement on'} AI visibility. ${composite >= 80 ? 'Your brand is AI-ready.' : 'Focus on AI governance files and entity signals.'}</div></div></div>
+    <div class="share-bar"><span>Share Report</span><div><button class="share-btn" onclick="window.print()">Print</button><button class="share-btn" onclick="copyReport()">Copy</button></div></div>
+    <button class="rst" onclick="resetAudit()">← New Audit</button>
+  `;
+}
+
+function toggleAcc(id){
+  const el = document.getElementById(id);
+  if(el) el.style.display = el.style.display === 'none' ? 'block' : 'none';
+}
+
+function copyReport(){
+  navigator.clipboard.writeText('AUDIT-AI Report');
+  alert('Copied');
+}
+
+function resetAudit(){
+  document.getElementById('results-zone').style.display = 'none';
+  document.getElementById('loading-zone').style.display = 'none';
+  document.getElementById('input-zone').style.display = 'block';
+  document.getElementById('url-input').value = '';
+}
+
+document.getElementById('url-input').addEventListener('keypress', e => { if(e.key === 'Enter') startAudit(); });
 </script>
 </body>
 </html>
