@@ -4,8 +4,8 @@
 <title>AUDIT-AI - REAL</title>
 <style>
 body{font-family:sans-serif;max-width:800px;margin:50px auto;padding:20px}
-input{padding:12px;width:70%}
-button{padding:12px 24px}
+input{padding:12px;width:70%;font-size:16px}
+button{padding:12px 24px;font-size:16px;margin-left:10px}
 pre{background:#f0f0f0;padding:20px;overflow:auto}
 .good{color:green}
 .bad{color:red}
@@ -13,7 +13,7 @@ pre{background:#f0f0f0;padding:20px;overflow:auto}
 </head>
 <body>
 <h1>AUDIT-AI™ REAL</h1>
-<p>Checks REAL files on any website</p>
+<p>Checks REAL files on any website via Cloudflare Worker</p>
 <input type="text" id="url" placeholder="5thelement.ai">
 <button onclick="runAudit()">Run REAL Audit</button>
 <pre id="result">Results will appear here</pre>
@@ -21,31 +21,43 @@ pre{background:#f0f0f0;padding:20px;overflow:auto}
 <script>
 async function runAudit() {
   const domain = document.getElementById('url').value;
-  document.getElementById('result').innerText = 'Scanning ' + domain + '...';
+  if(!domain) return;
   
-  const res = await fetch('https://audit-worker.aipath512.workers.dev', {
-    method: 'POST',
-    headers: {'Content-Type':'application/json'},
-    body: JSON.stringify({url: 'https://' + domain})
-  });
+  const resultDiv = document.getElementById('result');
+  resultDiv.innerText = '🔍 Scanning ' + domain + '...\n\nThis may take 5-10 seconds...';
   
-  const data = await res.json();
-  
-  let output = `DOMAIN: ${data.domain}\n`;
-  output += `SCORE: ${data.score}/100\n`;
-  output += `\n📁 FILES CHECKED:\n`;
-  output += `  robots.txt: ${data.signals.robots_txt.exists ? '✅' : '❌'}\n`;
-  output += `  llms.txt: ${data.signals.llms_txt.exists ? '✅' : '❌'}\n`;
-  output += `  ai.json: ${data.signals.ai_json.exists ? '✅' : '❌'}\n`;
-  output += `  entities.json: ${data.signals.entities_json.exists ? '✅' : '❌'}\n`;
-  output += `  proof.json: ${data.signals.proof_json.exists ? '✅' : '❌'}\n`;
-  output += `  sitemap.xml: ${data.signals.sitemap_xml.exists ? '✅' : '❌'}\n`;
-  output += `\n🤖 AI CRAWLER RULES:\n`;
-  output += `  ClaudeBot: ${data.signals.ai_crawler_rules.claudebot}\n`;
-  output += `  GPTBot: ${data.signals.ai_crawler_rules.gptbot}\n`;
-  output += `  Google-Extended: ${data.signals.ai_crawler_rules.google_extended}\n`;
-  
-  document.getElementById('result').innerText = output;
+  try {
+    const response = await fetch('https://audit-worker.aipath512.workers.dev', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({url: 'https://' + domain})
+    });
+    
+    const data = await response.json();
+    
+    let output = `✅ REAL AUDIT RESULTS for ${data.domain}\n`;
+    output += `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`;
+    output += `📊 AI SIGNAL SCORE: ${data.score}/100\n`;
+    output += `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n`;
+    output += `📁 CRITICAL FILES:\n`;
+    output += `  llms.txt     : ${data.signals.llms_txt.exists ? '✅ FOUND' : '❌ MISSING'}\n`;
+    output += `  ai.json      : ${data.signals.ai_json.exists ? '✅ FOUND' : '❌ MISSING'}\n`;
+    output += `  entities.json: ${data.signals.entities_json.exists ? '✅ FOUND' : '❌ MISSING'}\n`;
+    output += `  proof.json   : ${data.signals.proof_json.exists ? '✅ FOUND' : '❌ MISSING'}\n`;
+    output += `  robots.txt   : ${data.signals.robots_txt.exists ? '✅ FOUND' : '❌ MISSING'}\n\n`;
+    output += `🤖 AI CRAWLER RULES:\n`;
+    output += `  ClaudeBot       : ${data.signals.ai_crawler_rules.claudebot === 'allow' ? '✅ ALLOWED' : '❌ BLOCKED'}\n`;
+    output += `  GPTBot          : ${data.signals.ai_crawler_rules.gptbot === 'allow' ? '✅ ALLOWED' : '❌ BLOCKED'}\n`;
+    output += `  Google-Extended : ${data.signals.ai_crawler_rules.google_extended === 'allow' ? '✅ ALLOWED' : '❌ BLOCKED'}\n`;
+    output += `  PerplexityBot   : ${data.signals.ai_crawler_rules.perplexitybot === 'allow' ? '✅ ALLOWED' : '❌ BLOCKED'}\n`;
+    output += `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`;
+    output += `📝 SUMMARY: ${data.summary}\n`;
+    
+    resultDiv.innerText = output;
+    
+  } catch(err) {
+    resultDiv.innerText = '❌ ERROR: ' + err.message + '\n\nMake sure the Worker is running.';
+  }
 }
 </script>
 </body>
