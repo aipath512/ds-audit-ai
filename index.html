@@ -4,6 +4,34 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AUDIT-AI™ — 167-Signal Visibility Engine</title>
+
+<!-- Open Graph Tags -->
+<meta property="og:title" content="AUDIT-AI™ - AI Visibility Audit">
+<meta property="og:description" content="167-signal AI audit tool. Check AEO, GEO, AIO, SEO, AI Signals.">
+<meta property="og:url" content="https://1clic-ia.eu">
+<meta property="og:type" content="website">
+
+<!-- Twitter Card Tags -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="AUDIT-AI™">
+<meta name="twitter:site" content="@aipath512">
+
+<!-- Organization Schema with sameAs links -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "AUDIT-AI",
+  "url": "https://1clic-ia.eu",
+  "sameAs": [
+    "https://www.linkedin.com/company/107338970",
+    "https://www.crunchbase.com/organization/aiventure-s-r-l",
+    "https://www.wikidata.org/wiki/Q43229",
+    "https://x.com/aipath512"
+  ]
+}
+</script>
+
 <script>
   document.documentElement.style.backgroundColor = '#ffffff';
   document.documentElement.style.color = '#000000';
@@ -88,7 +116,6 @@ header{padding:24px 0 20px;border-bottom:1px solid var(--border);display:flex;al
 .mod-bar{position:absolute;bottom:0;left:0;height:2px;background:var(--blue);width:0%;transition:width .4s ease;border-radius:0 2px 2px 0;}
 .mod.done .mod-bar{background:var(--green);width:100%;}
 .stream{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:18px 22px;font-size:12px;font-family:'Inter',monospace;line-height:1.9;height:172px;overflow-y:auto;color:var(--text);}
-.stream::-webkit-scrollbar{width:3px;} .stream::-webkit-scrollbar-thumb{background:var(--border-md);border-radius:3px;}
 .sl-ok{color:var(--green);} .sl-warn{color:var(--gold);} .sl-fail{color:var(--red);} .sl-info{color:var(--blue);}
 #results-zone{display:none;padding:64px 0;}
 .sh-grid{display:grid;grid-template-columns:240px 1fr;gap:52px;align-items:center;margin-bottom:60px;padding-bottom:60px;border-bottom:1px solid var(--border);}
@@ -123,10 +150,9 @@ header{padding:24px 0 20px;border-bottom:1px solid var(--border);display:flex;al
 .ct{font-size:11px;font-weight:500;padding:4px 11px;border-radius:100px;}
 .ct-ok{background:var(--green-bg);color:var(--green);border:1px solid rgba(26,127,64,.2);}
 .ct-no{background:var(--red-bg);color:var(--red);border:1px solid rgba(192,57,43,.2);}
-.synth{border:1px solid var(--border-md);border-radius:var(--r);padding:36px 40px;margin-bottom:44px;background:var(--bg);box-shadow:var(--sh2);position:relative;overflow:hidden;}
-.synth::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--blue),transparent 65%);}
+.synth{border:1px solid var(--border-md);border-radius:var(--r);padding:36px 40px;margin-bottom:44px;background:var(--bg);box-shadow:var(--sh2);}
 .synth-body{font-family:'Playfair Display',serif;font-size:18px;line-height:1.75;font-style:italic;color:var(--text);}
-.acc-wrap{margin-bottom:10px;border:1px solid var(--border);border-radius:var(--r);overflow:hidden;background:var(--bg);box-shadow:var(--sh1);}
+.acc-wrap{margin-bottom:10px;border:1px solid var(--border);border-radius:var(--r);overflow:hidden;background:var(--bg);}
 .acc-header{width:100%;display:flex;align-items:center;justify-content:space-between;padding:18px 20px;background:var(--bg);border:none;cursor:pointer;gap:12px;}
 .acc-header:hover{background:var(--bg2);}
 .acc-header-left{display:flex;align-items:center;gap:14px;flex:1;}
@@ -173,20 +199,6 @@ header{padding:24px 0 20px;border-bottom:1px solid var(--border);display:flex;al
   .acc-ap-grid{grid-template-columns:1fr;}
 }
 </style>
-  <script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  "name": "5thElement.ai",
-  "url": "https://5thelement.ai",
-  "sameAs": [
-    "https://www.linkedin.com/company/107338970",
-    "https://www.crunchbase.com/organization/aiventure-s-r-l",
-    "https://www.wikidata.org/wiki/Q43229",
-    "https://x.com/aipath512"
-  ]
-}
-</script>
 </head>
 <body>
 <div id="bar"></div>
@@ -231,8 +243,6 @@ const WORKER_URL = 'https://audit-worker.aipath512.workers.dev';
 
 function toggleTheme(){
   const isDark = document.documentElement.classList.toggle('dark');
-  document.documentElement.style.backgroundColor = isDark ? '#000000' : '#ffffff';
-  document.body.style.backgroundColor = isDark ? '#000000' : '#ffffff';
   document.getElementById('ti').textContent = isDark ? '☀' : '☾';
   document.getElementById('tl').textContent = isDark ? 'Light' : 'Dark';
 }
@@ -286,7 +296,6 @@ async function runRealAudit(url, domain){
       return;
     }
     
-    // Extract scores from worker response
     const scores = data.scores || {};
     const aeoScore = scores.AEO || 0;
     const geoScore = scores.GEO || 0;
@@ -295,18 +304,17 @@ async function runRealAudit(url, domain){
     const aiSignalsScore = scores.AI_SIGNALS || 0;
     const compositeScore = scores.COMPOSITE || Math.round((aeoScore + geoScore + aioScore + seoScore + aiSignalsScore) / 5);
     
-    // Update progress bars
     const mods = [
-      {id:'aeo', score: aeoScore, total: 100, label:'AEO'},
-      {id:'geo', score: geoScore, total: 100, label:'GEO'},
-      {id:'aio', score: aioScore, total: 100, label:'AIO'},
-      {id:'seo', score: seoScore, total: 100, label:'SEO'},
-      {id:'ai', score: aiSignalsScore, total: 100, label:'AI Signals'}
+      {id:'aeo', score: aeoScore, label:'AEO'},
+      {id:'geo', score: geoScore, label:'GEO'},
+      {id:'aio', score: aioScore, label:'AIO'},
+      {id:'seo', score: seoScore, label:'SEO'},
+      {id:'ai', score: aiSignalsScore, label:'AI Signals'}
     ];
     
     for(let i=0; i<mods.length; i++){
       const mod = mods[i];
-      document.getElementById(`c-${mod.id}`).textContent = `${mod.score}/${mod.total}`;
+      document.getElementById(`c-${mod.id}`).textContent = `${mod.score}/100`;
       document.getElementById(`b-${mod.id}`).style.width = `${mod.score}%`;
       document.getElementById(`m-${mod.id}`).classList.add('done');
       setP(60 + (i+1)*8);
@@ -314,7 +322,7 @@ async function runRealAudit(url, domain){
       log(`${mod.label}: ${mod.score}/100 (REAL detection)`,'sl-ok');
     }
     
-    document.getElementById('c-tot').textContent = `${Math.round((aeoScore + geoScore + aioScore + seoScore + aiSignalsScore)/5)}/100`;
+    document.getElementById('c-tot').textContent = `${compositeScore}/100`;
     document.getElementById('b-tot').style.width = `${compositeScore}%`;
     setP(100);
     setTimeout(()=>setP(0),500);
@@ -323,14 +331,7 @@ async function runRealAudit(url, domain){
     await sleep(300);
     document.getElementById('loading-zone').style.display='none';
     
-    renderResults(url, domain, {
-      AEO: aeoScore,
-      GEO: geoScore,
-      AIO: aioScore,
-      SEO: seoScore,
-      AI_SIGNALS: aiSignalsScore,
-      COMPOSITE: compositeScore
-    }, data);
+    renderResults(url, domain, scores, compositeScore, data);
     
   } catch(err) {
     log(`❌ Worker error: ${err.message}`,'sl-fail');
@@ -338,11 +339,10 @@ async function runRealAudit(url, domain){
   }
 }
 
-function renderResults(url, domain, scores, workerData){
+function renderResults(url, domain, scores, composite, workerData){
   const zone = document.getElementById('results-zone');
   zone.style.display='block';
   
-  const composite = scores.COMPOSITE;
   let grade, stroke, cls;
   if(composite >= 90){ grade='S — Dominant'; stroke='var(--green)'; cls='grade-s'; }
   else if(composite >= 80){ grade='A — Visible'; stroke='var(--blue)'; cls='grade-a'; }
@@ -353,27 +353,19 @@ function renderResults(url, domain, scores, workerData){
   const circ = 2 * Math.PI * 82;
   const dashOffset = circ - (composite/100) * circ;
   
-  // Build crawler tags from worker data
-  const crawlers = workerData.files || {};
+  const files = workerData.details || {};
   const crawlerHtml = `
-    <span class="ct ${crawlers.llms_txt ? 'ct-ok' : 'ct-no'}">${crawlers.llms_txt ? '✓' : '✗'} llms.txt</span>
-    <span class="ct ${crawlers.ai_json ? 'ct-ok' : 'ct-no'}">${crawlers.ai_json ? '✓' : '✗'} ai.json</span>
-    <span class="ct ${crawlers.entities_json ? 'ct-ok' : 'ct-no'}">${crawlers.entities_json ? '✓' : '✗'} entities.json</span>
-    <span class="ct ${crawlers.proof_json ? 'ct-ok' : 'ct-no'}">${crawlers.proof_json ? '✓' : '✗'} proof.json</span>
+    <span class="ct ${files.llms_txt_exists ? 'ct-ok' : 'ct-no'}">${files.llms_txt_exists ? '✓' : '✗'} llms.txt</span>
+    <span class="ct ${files.ai_json_exists ? 'ct-ok' : 'ct-no'}">${files.ai_json_exists ? '✓' : '✗'} ai.json</span>
+    <span class="ct ${files.entities_json_exists ? 'ct-ok' : 'ct-no'}">${files.entities_json_exists ? '✓' : '✗'} entities.json</span>
+    <span class="ct ${files.proof_json_exists ? 'ct-ok' : 'ct-no'}">${files.proof_json_exists ? '✓' : '✗'} proof.json</span>
+    <span class="ct ${files.intents_json_exists ? 'ct-ok' : 'ct-no'}">${files.intents_json_exists ? '✓' : '✗'} intents.json</span>
   `;
   
-  // Build synthesis
   let synthesis = '';
-  if(composite >= 80) synthesis = `${domain} commands strong AI visibility at ${composite}/100, with a well-built signal foundation. The remaining exposure lies in GEO-layer entity anchoring — a fixable structural absence.`;
-  else if(composite >= 60) synthesis = `${domain} occupies a contested middle ground at ${composite}/100 — partially visible to AI discovery systems, yet absent in decisive answer layers.`;
-  else synthesis = `${domain} is largely invisible to AI systems at ${composite}/100. No AI governance files detected. Immediate deployment of AI signal stack is required.`;
-  
-  // Build action plan
-  let actionPlan = '';
-  if(scores.AI_SIGNALS < 50) actionPlan = 'Deploy llms.txt, ai.json, entities.json, and proof.json. Configure robots.txt for ClaudeBot and GPTBot.';
-  else if(scores.AEO < 50) actionPlan = 'Add FAQ Schema, HowTo Schema, and answer-first content structure. Implement Speakable Schema.';
-  else if(scores.GEO < 50) actionPlan = 'Deploy Organization Schema with sameAs links. Add Open Graph and Twitter Card meta tags.';
-  else actionPlan = 'Maintain: Monitor Core Web Vitals, build topical authority clusters, increase E-E-A-T signals.';
+  if(composite >= 80) synthesis = `${domain} commands strong AI visibility at ${composite}/100. ${files.intents_json_exists ? 'intents.json found with ' + (files.intents_has_primary || 0) + ' primary intents.' : 'Missing intents.json - critical for AEO.'}`;
+  else if(composite >= 60) synthesis = `${domain} has moderate AI visibility at ${composite}/100. ${files.llms_txt_exists ? 'llms.txt found.' : 'Missing llms.txt - critical for GEO.'}`;
+  else synthesis = `${domain} has poor AI visibility at ${composite}/100. Missing critical AI signal files.`;
   
   zone.innerHTML = `
   <div class="sh-grid fu1 ${cls}">
@@ -393,19 +385,18 @@ function renderResults(url, domain, scores, workerData){
       <div class="sh-url">${url}</div>
       <div class="sh-ts">${new Date().toLocaleString()} · Live Worker Audit</div>
       <div class="dim-grid">
-        <div class="dim d-aeo"><div class="dim-lbl">AEO</div><div class="dim-name">Answer Engine Optimization</div><div class="dim-val">${scores.AEO}</div><div class="dim-bar"><div class="dim-bar-f" style="width:${scores.AEO}%"></div></div></div>
-        <div class="dim d-geo"><div class="dim-lbl">GEO</div><div class="dim-name">Generative Engine Optimization</div><div class="dim-val">${scores.GEO}</div><div class="dim-bar"><div class="dim-bar-f" style="width:${scores.GEO}%"></div></div></div>
-        <div class="dim d-aio"><div class="dim-lbl">AIO</div><div class="dim-name">AI Optimization</div><div class="dim-val">${scores.AIO}</div><div class="dim-bar"><div class="dim-bar-f" style="width:${scores.AIO}%"></div></div></div>
-        <div class="dim d-seo"><div class="dim-lbl">SEO</div><div class="dim-name">Search Engine Optimization</div><div class="dim-val">${scores.SEO}</div><div class="dim-bar"><div class="dim-bar-f" style="width:${scores.SEO}%"></div></div></div>
+        <div class="dim d-aeo"><div class="dim-lbl">AEO</div><div class="dim-name">Answer Engine Optimization</div><div class="dim-val">${scores.AEO || 0}</div><div class="dim-bar"><div class="dim-bar-f" style="width:${scores.AEO || 0}%"></div></div></div>
+        <div class="dim d-geo"><div class="dim-lbl">GEO</div><div class="dim-name">Generative Engine Optimization</div><div class="dim-val">${scores.GEO || 0}</div><div class="dim-bar"><div class="dim-bar-f" style="width:${scores.GEO || 0}%"></div></div></div>
+        <div class="dim d-aio"><div class="dim-lbl">AIO</div><div class="dim-name">AI Optimization</div><div class="dim-val">${scores.AIO || 0}</div><div class="dim-bar"><div class="dim-bar-f" style="width:${scores.AIO || 0}%"></div></div></div>
+        <div class="dim d-seo"><div class="dim-lbl">SEO</div><div class="dim-name">Search Engine Optimization</div><div class="dim-val">${scores.SEO || 0}</div><div class="dim-bar"><div class="dim-bar-f" style="width:${scores.SEO || 0}%"></div></div></div>
       </div>
     </div>
   </div>
   <div class="ai-band fu2">
-    <div><div class="aib-lbl">AI Signals Layer · 32 Signals</div><div class="aib-val">${scores.AI_SIGNALS}<span> / 100</span></div></div>
-    <div><div style="font-size:10px;font-weight:600;margin-bottom:9px;text-align:right">Critical AI Files</div><div class="crawler-tags">${crawlerHtml}</div></div>
+    <div><div class="aib-lbl">AI Signals Layer · 32 Signals</div><div class="aib-val">${scores.AI_SIGNALS || 0}<span> / 100</span></div></div>
+    <div><div style="font-size:10px;font-weight:600;margin-bottom:9px;text-align:right">Critical AI Files Detected</div><div class="crawler-tags">${crawlerHtml}</div></div>
   </div>
   <div class="acc-wrap fu3"><button class="acc-header open" onclick="toggleAcc('synthBody')"><div class="acc-header-left"><span class="acc-icon" style="background:var(--blue-bg);color:var(--blue)">⟁</span><div><div class="acc-tag">AI Synthesis</div><div class="acc-label">Executive Verdict</div></div></div><span class="acc-chevron">▲</span></button><div id="synthBody" class="acc-body" style="display:block"><div class="acc-inner"><div class="acc-synth-body">${synthesis}</div></div></div></div>
-  <div class="acc-wrap fu3"><button class="acc-header open" onclick="toggleAcc('actionBody')"><div class="acc-header-left"><span class="acc-icon" style="background:var(--gold-bg);color:var(--gold)">◈</span><div><div class="acc-tag">Action Plan</div><div class="acc-label">Path to Dominance</div></div></div><span class="acc-chevron">▲</span></button><div id="actionBody" class="acc-body" style="display:block"><div class="acc-inner"><div class="acc-ap-grid"><div class="acc-ap-card acc-ap-c"><div class="acc-ap-p">🔴 Critical — Fix Now</div><div class="acc-ap-title">Deploy AI Signal Stack</div><div class="ac-items"><div class="ac-item">Add llms.txt with entity declaration</div><div class="ac-item">Configure robots.txt for ClaudeBot/GPTBot</div><div class="ac-item">Deploy proof.json with SHA-256</div></div><div class="ac-delta">▲ +12–18 pts in 7 days</div></div><div class="acc-ap-card acc-ap-i"><div class="acc-ap-p">🟡 Important — This Month</div><div class="acc-ap-title">Build Entity Architecture</div><div class="ac-items"><div class="ac-item">Deploy entities.json and ai.json</div><div class="ac-item">Implement Organization Schema</div><div class="ac-item">Add FAQ schema to key pages</div></div><div class="ac-delta">▲ +8–14 pts in 30 days</div></div><div class="acc-ap-card acc-ap-o"><div class="acc-ap-p">🔵 Optimize — Q2 Roadmap</div><div class="acc-ap-title">${actionPlan.substring(0, 50)}...</div><div class="ac-items"><div class="ac-item">${actionPlan.substring(0, 80)}</div></div><div class="ac-delta">▲ +15–25 pts in 90 days</div></div></div></div></div></div>
   <div class="share-bar fu5"><div class="share-label">Share this report</div><div class="share-btns"><button class="share-btn" onclick="window.print()"><span class="share-ico">🖨</span><span>Print Report</span></button><button class="share-btn" onclick="copyReport()"><span class="share-ico">📋</span><span>Copy Summary</span></button></div></div>
   <button class="rst" onclick="resetAudit()">← New Audit</button>`;
   
@@ -435,7 +426,8 @@ function toggleAcc(id){
 
 function copyReport(){
   const summary = document.querySelector('.sh-url')?.innerText || '';
-  navigator.clipboard.writeText(`AUDIT-AI Report\n${summary}\nScore: ${document.querySelector('.r-num')?.innerText}/100`);
+  const score = document.querySelector('.r-num')?.innerText || '0';
+  navigator.clipboard.writeText(`AUDIT-AI Report\n${summary}\nScore: ${score}/100`);
   alert('Report copied!');
 }
 
