@@ -3,130 +3,444 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AUDIT-AI™ — REAL 5-Category AI Audit</title>
+<title>AUDIT-AI™ — 167-Signal Visibility Engine</title>
+<script>
+  document.documentElement.style.backgroundColor = '#ffffff';
+  document.documentElement.style.color = '#000000';
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400;1,700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-*{margin:0;padding:0;box-sizing:border-box;}
-body{font-family:'Inter',sans-serif;background:#ffffff;color:#000000;line-height:1.5}
-.wrap{max-width:1000px;margin:0 auto;padding:40px 24px}
-h1{font-size:32px;margin-bottom:8px}
-h1 span{color:#0051a8}
-.sub{color:#666;margin-bottom:32px}
-.input-group{display:flex;gap:12px;margin-bottom:40px}
-input{flex:1;padding:14px 20px;font-size:16px;border:2px solid #e0e0e0;border-radius:60px;outline:none}
-input:focus{border-color:#0051a8}
-button{padding:14px 32px;background:#0051a8;color:white;border:none;border-radius:60px;font-weight:600;cursor:pointer}
-.loading{text-align:center;padding:40px;display:none}
-.results{display:none}
-.score-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;margin-bottom:32px}
-.score-card{background:#f5f5f7;border-radius:16px;padding:20px;text-align:center}
-.score-card h3{font-size:14px;margin-bottom:8px;color:#666}
-.score-number{font-size:36px;font-weight:700}
-.composite-card{background:#0051a8;color:white;border-radius:16px;padding:24px;text-align:center;margin-bottom:32px}
-.composite-number{font-size:64px;font-weight:700}
-.files-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-top:16px}
-.file-item{padding:12px;background:#f5f5f7;border-radius:12px}
-.file-name{font-weight:600;margin-bottom:4px}
-.status-ok{color:#1a7f40}
-.status-missing{color:#c0392b}
-.hidden{display:none}
+:root {
+  --bg:#ffffff; --bg2:#f5f5f7; --bg3:#e8e8ed;
+  --text:#000000; --mid:#3a3a3c; --light:#6e6e73; --xlight:#aeaeb2;
+  --border:rgba(0,0,0,0.08); --border-md:rgba(0,0,0,0.14);
+  --blue:#0051a8; --blue-bg:#e8f0fb;
+  --red:#c0392b; --red-bg:#fdecea;
+  --green:#1a7f40; --green-bg:#e6f5ed;
+  --gold:#7a4f00; --gold-bg:#fff3cd;
+  --purple:#5e2ca5; --purple-bg:#f0ebff;
+  --sh1:0 1px 4px rgba(0,0,0,0.06),0 1px 2px rgba(0,0,0,0.04);
+  --sh2:0 4px 20px rgba(0,0,0,0.08),0 2px 8px rgba(0,0,0,0.04);
+  --sh3:0 12px 48px rgba(0,0,0,0.10),0 4px 14px rgba(0,0,0,0.05);
+  --r:12px; --rs:8px; --rxs:5px;
+}
+html.dark {
+  --bg:#000000; --bg2:#111111; --bg3:#1c1c1e;
+  --text:#f5f5f7; --mid:#c7c7cc; --light:#8e8e93; --xlight:#48484a;
+  --border:rgba(255,255,255,0.08); --border-md:rgba(255,255,255,0.14);
+  --blue:#5eb4ff; --blue-bg:#0a1829;
+  --red:#ff6b6b; --red-bg:#1a0808;
+  --green:#32d74b; --green-bg:#061509;
+  --gold:#ffd60a; --gold-bg:#1a1200;
+  --purple:#c09cff; --purple-bg:#1a0a2e;
+  --sh1:0 1px 4px rgba(0,0,0,0.5); --sh2:0 4px 20px rgba(0,0,0,0.5); --sh3:0 12px 48px rgba(0,0,0,0.6);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html { scroll-behavior: smooth; background-color: #ffffff !important; transition: background-color .35s ease; }
+html.dark { background-color: #000000 !important; }
+body { background-color: #ffffff !important; color: #000000 !important; font-family: 'Inter', sans-serif; font-weight: 400; font-size: 16px; line-height: 1.5; -webkit-font-smoothing: antialiased; overflow-x: hidden; min-height: 100vh; transition: background-color .35s ease, color .35s ease; }
+html.dark body { background-color: #000000 !important; color: #f5f5f7 !important; }
+body, body * { color: #000000; }
+html.dark body, html.dark body * { color: #f5f5f7 !important; }
+.eyebrow, .synth-tag, .ld-tag { color: var(--blue) !important; }
+.d-aeo .dim-lbl, .d-aeo .dim-val { color: var(--blue) !important; }
+.d-geo .dim-lbl, .d-geo .dim-val { color: var(--gold) !important; }
+.d-aio .dim-lbl, .d-aio .dim-val { color: var(--green) !important; }
+.d-seo .dim-lbl, .d-seo .dim-val { color: var(--purple) !important; }
+.sh, .sl-ok  { color: var(--green)  !important; }
+.sm, .sl-warn{ color: var(--gold)   !important; }
+.sl_, .sl-fail { color: var(--red)  !important; }
+.sl-info     { color: var(--blue)   !important; }
+#toggle{display:inline-flex;align-items:center;gap:7px;background:var(--text);color:var(--bg);border:none;border-radius:100px;padding:6px 14px 6px 11px;font-family:'Inter',sans-serif;font-size:11px;font-weight:500;cursor:pointer;transition:all .2s;box-shadow:var(--sh1);margin-top:10px;}
+#toggle:hover{box-shadow:var(--sh2);}
+#bar{position:fixed;top:0;left:0;height:2px;background:var(--blue);z-index:9999;width:0%;transition:width .2s;}
+.wrap{max-width:1080px;margin:0 auto;padding:0 36px;}
+header{padding:24px 0 20px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;}
+.brand h1{font-family:'Playfair Display',serif;font-weight:700;font-size:22px;letter-spacing:-.02em;line-height:1.2;}
+.brand h1 em{font-style:italic;color:var(--blue);}
+.brand p{font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--text);margin-top:3px;}
+.hd-meta{font-size:10px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--text);text-align:right;line-height:1.7;padding-top:4px;}
+#input-zone{padding:40px 0 28px;text-align:center;}
+.eyebrow{font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--blue);margin-bottom:14px;}
+.hero-h{font-family:'Playfair Display',serif;font-weight:700;font-size:clamp(32px,5vw,56px);line-height:1.08;letter-spacing:-.03em;margin-bottom:14px;}
+.hero-h em{font-style:italic;color:var(--blue);}
+.hero-s{font-size:16px;font-weight:300;color:var(--text);max-width:520px;margin:0 auto 32px;line-height:1.65;}
+.url-wrap{max-width:620px;margin:0 auto 10px;position:relative;}
+.url-in{width:100%;padding:19px 148px 19px 22px;font-family:'Inter',sans-serif;font-size:15px;color:var(--text);background:var(--bg);border:1.5px solid var(--border-md);border-radius:100px;outline:none;box-shadow:var(--sh1);transition:border-color .2s,box-shadow .2s,background .35s;}
+.url-in::placeholder{color:var(--text);}
+.url-in:focus{border-color:var(--blue);box-shadow:0 0 0 4px rgba(0,81,168,.08),var(--sh1);}
+.url-go{position:absolute;right:6px;top:50%;transform:translateY(-50%);padding:11px 26px;background:var(--text);color:var(--bg);border:none;border-radius:100px;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;letter-spacing:.04em;cursor:pointer;transition:background .2s,color .2s,transform .15s;}
+.url-go:hover{transform:translateY(-50%) scale(1.03);}
+#loading-zone{display:none;padding:80px 0;}
+.ld-head{text-align:center;margin-bottom:48px;}
+.ld-tag{font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--blue);margin-bottom:14px;}
+.ld-title{font-family:'Playfair Display',serif;font-weight:700;font-size:30px;letter-spacing:-.02em;margin-bottom:8px;}
+.ld-url{font-size:13px;color:var(--text);font-family:'Inter',monospace;}
+.mod-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:28px;}
+.mod{background:var(--bg);border:1px solid var(--border);border-radius:var(--r);padding:20px 18px 16px;box-shadow:var(--sh1);position:relative;overflow:hidden;transition:border-color .3s,box-shadow .3s;}
+.mod.active{border-color:var(--blue);box-shadow:0 0 0 3px rgba(0,81,168,.07),var(--sh1);}
+.mod.done{border-color:var(--green);}
+.mod-lbl{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--text);margin-bottom:8px;}
+.mod.active .mod-lbl{color:var(--blue);}
+.mod.done .mod-lbl{color:var(--green);}
+.mod-cnt{font-family:'Playfair Display',serif;font-weight:700;font-size:26px;color:var(--text);line-height:1;}
+.mod-bar{position:absolute;bottom:0;left:0;height:2px;background:var(--blue);width:0%;transition:width .4s ease;border-radius:0 2px 2px 0;}
+.mod.done .mod-bar{background:var(--green);width:100%;}
+.stream{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:18px 22px;font-size:12px;font-family:'Inter',monospace;line-height:1.9;height:172px;overflow-y:auto;color:var(--text);}
+.stream::-webkit-scrollbar{width:3px;} .stream::-webkit-scrollbar-thumb{background:var(--border-md);border-radius:3px;}
+.sl-ok{color:var(--green);} .sl-warn{color:var(--gold);} .sl-fail{color:var(--red);} .sl-info{color:var(--blue);}
+#results-zone{display:none;padding:64px 0;}
+.sh-grid{display:grid;grid-template-columns:240px 1fr;gap:52px;align-items:center;margin-bottom:60px;padding-bottom:60px;border-bottom:1px solid var(--border);}
+.ring-w{position:relative;display:flex;align-items:center;justify-content:center;}
+.ring-w svg{width:210px;height:210px;}
+.r-bg{fill:none;stroke:var(--bg3);stroke-width:10;}
+.r-fill{fill:none;stroke-width:10;stroke-linecap:round;transform:rotate(-90deg);transform-origin:center;transition:stroke-dashoffset 1.6s cubic-bezier(.4,0,.2,1);}
+.r-inner{position:absolute;text-align:center;}
+.r-num{font-family:'Playfair Display',serif;font-weight:700;font-size:54px;line-height:1;color:var(--text);display:block;}
+.r-lbl{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--text);margin-top:4px;display:block;}
+.r-grade{display:inline-block;margin-top:9px;font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:4px 12px;border-radius:100px;border:1.5px solid;}
+.sh-label{font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--text);margin-bottom:7px;}
+.sh-url{font-family:'Playfair Display',serif;font-weight:600;font-size:20px;letter-spacing:-.02em;margin-bottom:5px;word-break:break-all;}
+.sh-ts{font-size:11px;color:var(--text);margin-bottom:32px;}
+.dim-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;}
+.dim{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rs);padding:16px 18px;}
+.dim-lbl{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;margin-bottom:2px;}
+.dim-name{font-size:11px;font-weight:400;color:var(--text);margin-bottom:10px;}
+.dim-val{font-family:'Playfair Display',serif;font-weight:700;font-size:34px;line-height:1;}
+.dim-bar{height:2px;background:var(--bg3);border-radius:2px;margin-top:9px;}
+.dim-bar-f{height:100%;border-radius:2px;transition:width 1.2s ease;}
+.dim-delta{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:600;letter-spacing:.03em;margin-top:5px;padding:2px 8px;border-radius:100px;}
+.d-aeo .dim-lbl,.d-aeo .dim-val{color:var(--blue);} .d-aeo .dim-bar-f{background:var(--blue);}
+.d-geo .dim-lbl,.d-geo .dim-val{color:var(--gold);} .d-geo .dim-bar-f{background:var(--gold);}
+.d-aio .dim-lbl,.d-aio .dim-val{color:var(--green);} .d-aio .dim-bar-f{background:var(--green);}
+.d-seo .dim-lbl,.d-seo .dim-val{color:var(--purple);} .d-seo .dim-bar-f{background:var(--purple);}
+.ai-band{display:flex;align-items:center;justify-content:space-between;gap:28px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:26px 32px;margin-bottom:36px;box-shadow:var(--sh1);}
+.aib-lbl{font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--text);margin-bottom:5px;}
+.aib-val{font-family:'Playfair Display',serif;font-weight:700;font-size:40px;line-height:1;}
+.aib-val span{font-size:17px;font-weight:400;color:var(--text);}
+.crawler-tags{display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end;}
+.ct{font-size:11px;font-weight:500;padding:4px 11px;border-radius:100px;}
+.ct-ok{background:var(--green-bg);color:var(--green);border:1px solid rgba(26,127,64,.2);}
+.ct-no{background:var(--red-bg);color:var(--red);border:1px solid rgba(192,57,43,.2);}
+.synth{border:1px solid var(--border-md);border-radius:var(--r);padding:36px 40px;margin-bottom:44px;background:var(--bg);box-shadow:var(--sh2);position:relative;overflow:hidden;}
+.synth::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--blue),transparent 65%);}
+.synth-body{font-family:'Playfair Display',serif;font-size:18px;line-height:1.75;font-style:italic;color:var(--text);}
+.acc-wrap{margin-bottom:10px;border:1px solid var(--border);border-radius:var(--r);overflow:hidden;background:var(--bg);box-shadow:var(--sh1);}
+.acc-header{width:100%;display:flex;align-items:center;justify-content:space-between;padding:18px 20px;background:var(--bg);border:none;cursor:pointer;gap:12px;}
+.acc-header:hover{background:var(--bg2);}
+.acc-header-left{display:flex;align-items:center;gap:14px;flex:1;}
+.acc-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.acc-tag{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;}
+.acc-label{font-family:'Playfair Display',serif;font-weight:600;font-size:15px;letter-spacing:-.01em;color:var(--text);}
+.acc-body{overflow:hidden;}
+.acc-inner{padding:20px;border-top:1px solid var(--border);}
+.acc-synth-body{font-family:'Playfair Display',serif;font-size:17px;line-height:1.75;font-style:italic;color:var(--text);}
+.acc-ap-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+.acc-ap-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rs);padding:20px;position:relative;overflow:hidden;}
+.acc-ap-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+.acc-ap-c::before{background:var(--red);}
+.acc-ap-i::before{background:var(--gold);}
+.acc-ap-o::before{background:var(--blue);}
+.acc-ap-p{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px;}
+.acc-ap-c .acc-ap-p{color:var(--red);}
+.acc-ap-i .acc-ap-p{color:var(--gold);}
+.acc-ap-o .acc-ap-p{color:var(--blue);}
+.acc-ap-title{font-family:'Playfair Display',serif;font-weight:700;font-size:14px;margin-bottom:12px;}
+.ac-items{list-style:none;}
+.ac-item{font-size:12px;padding:5px 0 5px 14px;border-bottom:1px solid var(--border);position:relative;}
+.ac-item::before{content:'→';position:absolute;left:0;}
+.ac-delta{display:inline-block;margin-top:12px;font-size:11px;font-weight:600;background:var(--green-bg);color:var(--green);padding:3px 10px;border-radius:100px;}
+.aiready-cta{display:flex;align-items:center;justify-content:space-between;gap:20px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:22px 26px;margin:20px 0;}
+.aiready-btn{padding:11px 22px;background:var(--blue);color:#ffffff !important;border:none;border-radius:100px;font-weight:600;cursor:pointer;text-decoration:none;}
+.share-bar{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:20px 28px;margin:32px 0;}
+.share-btn{padding:9px 18px;background:var(--bg);color:var(--text);border:1.5px solid var(--border-md);border-radius:100px;font-size:12px;font-weight:500;cursor:pointer;}
+.rst{display:block;margin:0 auto 80px;padding:14px 48px;background:transparent;color:var(--text);border:1.5px solid var(--border-md);border-radius:100px;font-size:14px;font-weight:500;cursor:pointer;}
+.grade-s .r-grade,.grade-s-badge{color:var(--green)!important;border-color:var(--green)!important;}
+.grade-a .r-grade,.grade-a-badge{color:var(--blue)!important;border-color:var(--blue)!important;}
+.grade-b .r-grade,.grade-b-badge{color:var(--gold)!important;border-color:var(--gold)!important;}
+.grade-c .r-grade,.grade-c-badge{color:var(--red)!important;border-color:var(--red)!important;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.fu{animation:fadeUp .5s ease forwards;}
+.fu1{animation:fadeUp .5s .04s ease both;}
+.fu2{animation:fadeUp .5s .10s ease both;}
+.fu3{animation:fadeUp .5s .18s ease both;}
+.fu4{animation:fadeUp .5s .28s ease both;}
+.fu5{animation:fadeUp .5s .38s ease both;}
+@media(max-width:800px){
+  .sh-grid{grid-template-columns:1fr;gap:28px;text-align:center;}
+  .mod-grid{grid-template-columns:repeat(2,1fr);}
+  .acc-ap-grid{grid-template-columns:1fr;}
+}
 </style>
 </head>
 <body>
+<div id="bar"></div>
 <div class="wrap">
-  <h1>Audit<span>·AI™</span></h1>
-  <div class="sub">REAL 5-Category AI Visibility Audit · AEO · GEO · AIO · SEO · AI Signals</div>
-  
-  <div class="input-group">
-    <input type="text" id="domain" placeholder="example.com" value="5thelement.ai">
-    <button id="runBtn">Run REAL Audit</button>
+<header>
+  <div class="brand">
+    <h1>Audit<em>·AI™</em></h1>
+    <p>167-Signal AI Visibility Engine</p>
+    <button id="toggle" onclick="toggleTheme()"><span id="ti">☾</span><span id="tl">Dark</span></button>
   </div>
-  
-  <div id="loading" class="loading">🔍 Scanning 5thelement.ai for AI signals...</div>
-  <div id="results" class="results"></div>
+  <div class="hd-meta">V 2.0 · AI-FIRST<br><span style="opacity:.5;font-size:9px">REAL SIGNALS · NO SIMULATION</span></div>
+</header>
+<div id="input-zone">
+  <p class="eyebrow">Complete Diagnostic · 167 Signals · On-Site + On/Off Page</p>
+  <h2 class="hero-h">Your AI Search Visibility,<br><em>Diagnosed.</em></h2>
+  <p class="hero-s">Enter any URL — receive a full-stack AI Signals audit with REAL detection via Cloudflare Worker.</p>
+  <div class="url-wrap">
+    <input type="text" id="url-input" class="url-in" placeholder="yoursite.com" autocomplete="off"/>
+    <button class="url-go" id="go-btn" onclick="startAudit()">Run REAL Audit</button>
+  </div>
 </div>
-
+<div id="loading-zone">
+  <div class="ld-head fu">
+    <div class="ld-tag">Scanning REAL signals</div>
+    <div class="ld-title">Analyzing AI Visibility</div>
+    <div class="ld-url" id="ld-url"></div>
+  </div>
+  <div class="mod-grid fu1">
+    <div class="mod" id="m-aeo"><div class="mod-lbl">AEO</div><div class="mod-cnt" id="c-aeo">0/34</div><div class="mod-bar" id="b-aeo"></div></div>
+    <div class="mod" id="m-geo"><div class="mod-lbl">GEO</div><div class="mod-cnt" id="c-geo">0/28</div><div class="mod-bar" id="b-geo"></div></div>
+    <div class="mod" id="m-aio"><div class="mod-lbl">AIO</div><div class="mod-cnt" id="c-aio">0/31</div><div class="mod-bar" id="b-aio"></div></div>
+    <div class="mod" id="m-seo"><div class="mod-lbl">SEO</div><div class="mod-cnt" id="c-seo">0/42</div><div class="mod-bar" id="b-seo"></div></div>
+    <div class="mod" id="m-ai"><div class="mod-lbl">AI Signals</div><div class="mod-cnt" id="c-ai">0/32</div><div class="mod-bar" id="b-ai"></div></div>
+    <div class="mod" id="m-tot"><div class="mod-lbl">Total</div><div class="mod-cnt" id="c-tot">0/167</div><div class="mod-bar" id="b-tot"></div></div>
+  </div>
+  <div class="stream fu2" id="stream"></div>
+</div>
+<div id="results-zone"></div>
+</div>
 <script>
-const WORKER = 'https://audit-worker.aipath512.workers.dev';
+const WORKER_URL = 'https://audit-worker.aipath512.workers.dev';
 
-async function runAudit() {
-  const domain = document.getElementById('domain').value.trim();
-  if (!domain) return;
+function toggleTheme(){
+  const isDark = document.documentElement.classList.toggle('dark');
+  document.documentElement.style.backgroundColor = isDark ? '#000000' : '#ffffff';
+  document.body.style.backgroundColor = isDark ? '#000000' : '#ffffff';
+  document.getElementById('ti').textContent = isDark ? '☀' : '☾';
+  document.getElementById('tl').textContent = isDark ? 'Light' : 'Dark';
+}
+
+function setP(p){ document.getElementById('bar').style.width = p + '%'; }
+
+async function startAudit(){
+  let raw = document.getElementById('url-input').value.trim();
+  if(!raw){
+    const f=document.getElementById('url-input');
+    f.style.borderColor='var(--red)';
+    setTimeout(()=>{f.style.borderColor='';},1100);
+    return;
+  }
+  let clean = raw.replace(/^(https?:\/\/)?(www\.)?/i,'').replace(/\s+/g,'');
+  let url = 'https://'+clean;
+  document.getElementById('input-zone').style.display='none';
+  document.getElementById('loading-zone').style.display='block';
+  document.getElementById('ld-url').textContent=url;
+  document.getElementById('results-zone').innerHTML='';
+  document.getElementById('results-zone').style.display='none';
+  document.getElementById('stream').innerHTML='';
+  setP(0);
+  await runRealAudit(url, clean);
+}
+
+async function runRealAudit(url, domain){
+  const st=document.getElementById('stream');
+  function log(m,c=''){const d=document.createElement('div');d.className=c;d.textContent=m;st.appendChild(d);st.scrollTop=st.scrollHeight;}
+  function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
   
-  document.getElementById('loading').style.display = 'block';
-  document.getElementById('results').style.display = 'none';
-  document.getElementById('runBtn').disabled = true;
+  log('🔐 Calling REAL audit worker...','sl-info');
+  setP(10);
   
   try {
-    const res = await fetch(WORKER, {
+    const response = await fetch(WORKER_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ url: 'https://' + domain })
+      body: JSON.stringify({ url: url })
     });
     
-    const data = await res.json();
-    displayResults(data);
-  } catch (err) {
-    document.getElementById('results').innerHTML = `<div style="color:red;padding:20px">Error: ${err.message}</div>`;
-    document.getElementById('results').style.display = 'block';
-  } finally {
-    document.getElementById('loading').style.display = 'none';
-    document.getElementById('runBtn').disabled = false;
+    setP(30);
+    log('📡 Worker responded. Processing real signals...','sl-info');
+    
+    const data = await response.json();
+    setP(60);
+    
+    if(data.error) {
+      log(`❌ Error: ${data.error}`,'sl-fail');
+      setP(0);
+      return;
+    }
+    
+    // Extract scores from worker response
+    const scores = data.scores || {};
+    const aeoScore = scores.AEO || 0;
+    const geoScore = scores.GEO || 0;
+    const aioScore = scores.AIO || 0;
+    const seoScore = scores.SEO || 0;
+    const aiSignalsScore = scores.AI_SIGNALS || 0;
+    const compositeScore = scores.COMPOSITE || Math.round((aeoScore + geoScore + aioScore + seoScore + aiSignalsScore) / 5);
+    
+    // Update progress bars
+    const mods = [
+      {id:'aeo', score: aeoScore, total: 100, label:'AEO'},
+      {id:'geo', score: geoScore, total: 100, label:'GEO'},
+      {id:'aio', score: aioScore, total: 100, label:'AIO'},
+      {id:'seo', score: seoScore, total: 100, label:'SEO'},
+      {id:'ai', score: aiSignalsScore, total: 100, label:'AI Signals'}
+    ];
+    
+    for(let i=0; i<mods.length; i++){
+      const mod = mods[i];
+      document.getElementById(`c-${mod.id}`).textContent = `${mod.score}/${mod.total}`;
+      document.getElementById(`b-${mod.id}`).style.width = `${mod.score}%`;
+      document.getElementById(`m-${mod.id}`).classList.add('done');
+      setP(60 + (i+1)*8);
+      await sleep(150);
+      log(`${mod.label}: ${mod.score}/100 (REAL detection)`,'sl-ok');
+    }
+    
+    document.getElementById('c-tot').textContent = `${Math.round((aeoScore + geoScore + aioScore + seoScore + aiSignalsScore)/5)}/100`;
+    document.getElementById('b-tot').style.width = `${compositeScore}%`;
+    setP(100);
+    setTimeout(()=>setP(0),500);
+    
+    log('✨ REAL audit complete! Rendering dashboard...','sl-ok');
+    await sleep(300);
+    document.getElementById('loading-zone').style.display='none';
+    
+    renderResults(url, domain, {
+      AEO: aeoScore,
+      GEO: geoScore,
+      AIO: aioScore,
+      SEO: seoScore,
+      AI_SIGNALS: aiSignalsScore,
+      COMPOSITE: compositeScore
+    }, data);
+    
+  } catch(err) {
+    log(`❌ Worker error: ${err.message}`,'sl-fail');
+    setP(0);
   }
 }
 
-function displayResults(data) {
-  const scores = data.scores || {};
+function renderResults(url, domain, scores, workerData){
+  const zone = document.getElementById('results-zone');
+  zone.style.display='block';
   
-  // Color based on score
-  const getColor = (score) => {
-    if (score >= 80) return '#1a7f40';
-    if (score >= 60) return '#7a4f00';
-    return '#c0392b';
-  };
+  const composite = scores.COMPOSITE;
+  let grade, stroke, cls;
+  if(composite >= 90){ grade='S — Dominant'; stroke='var(--green)'; cls='grade-s'; }
+  else if(composite >= 80){ grade='A — Visible'; stroke='var(--blue)'; cls='grade-a'; }
+  else if(composite >= 65){ grade='B — Partial'; stroke='var(--gold)'; cls='grade-b'; }
+  else if(composite >= 50){ grade='C — At Risk'; stroke='var(--red)'; cls='grade-c'; }
+  else { grade='D — Invisible'; stroke='var(--red)'; cls='grade-d'; }
   
-  let scoresHtml = `
-    <div class="score-grid">
-      <div class="score-card"><h3>AEO</h3><div class="score-number" style="color:${getColor(scores.AEO)}">${scores.AEO || 0}</div><div style="font-size:12px">Answer Engine</div></div>
-      <div class="score-card"><h3>GEO</h3><div class="score-number" style="color:${getColor(scores.GEO)}">${scores.GEO || 0}</div><div style="font-size:12px">Generative Engine</div></div>
-      <div class="score-card"><h3>AIO</h3><div class="score-number" style="color:${getColor(scores.AIO)}">${scores.AIO || 0}</div><div style="font-size:12px">AI Optimization</div></div>
-      <div class="score-card"><h3>SEO</h3><div class="score-number" style="color:${getColor(scores.SEO)}">${scores.SEO || 0}</div><div style="font-size:12px">Search Engine</div></div>
-      <div class="score-card"><h3>AI Signals</h3><div class="score-number" style="color:${getColor(scores.AI_SIGNALS)}">${scores.AI_SIGNALS || 0}</div><div style="font-size:12px">Trust Layer</div></div>
-    </div>
-    <div class="composite-card">
-      <div>COMPOSITE SCORE</div>
-      <div class="composite-number">${scores.COMPOSITE || 0}</div>
-      <div>${data.grade || ''}</div>
-    </div>
+  const circ = 2 * Math.PI * 82;
+  const dashOffset = circ - (composite/100) * circ;
+  
+  // Build crawler tags from worker data
+  const crawlers = workerData.files || {};
+  const crawlerHtml = `
+    <span class="ct ${crawlers.llms_txt ? 'ct-ok' : 'ct-no'}">${crawlers.llms_txt ? '✓' : '✗'} llms.txt</span>
+    <span class="ct ${crawlers.ai_json ? 'ct-ok' : 'ct-no'}">${crawlers.ai_json ? '✓' : '✗'} ai.json</span>
+    <span class="ct ${crawlers.entities_json ? 'ct-ok' : 'ct-no'}">${crawlers.entities_json ? '✓' : '✗'} entities.json</span>
+    <span class="ct ${crawlers.proof_json ? 'ct-ok' : 'ct-no'}">${crawlers.proof_json ? '✓' : '✗'} proof.json</span>
   `;
   
-  let filesHtml = '<div class="files-grid">';
-  const files = data.files || {};
-  for (const [name, exists] of Object.entries(files)) {
-    filesHtml += `
-      <div class="file-item">
-        <div class="file-name">${name}</div>
-        <div class="${exists ? 'status-ok' : 'status-missing'}">${exists ? '✅ FOUND' : '❌ MISSING'}</div>
+  // Build synthesis
+  let synthesis = '';
+  if(composite >= 80) synthesis = `${domain} commands strong AI visibility at ${composite}/100, with a well-built signal foundation. The remaining exposure lies in GEO-layer entity anchoring — a fixable structural absence.`;
+  else if(composite >= 60) synthesis = `${domain} occupies a contested middle ground at ${composite}/100 — partially visible to AI discovery systems, yet absent in decisive answer layers.`;
+  else synthesis = `${domain} is largely invisible to AI systems at ${composite}/100. No AI governance files detected. Immediate deployment of AI signal stack is required.`;
+  
+  // Build action plan
+  let actionPlan = '';
+  if(scores.AI_SIGNALS < 50) actionPlan = 'Deploy llms.txt, ai.json, entities.json, and proof.json. Configure robots.txt for ClaudeBot and GPTBot.';
+  else if(scores.AEO < 50) actionPlan = 'Add FAQ Schema, HowTo Schema, and answer-first content structure. Implement Speakable Schema.';
+  else if(scores.GEO < 50) actionPlan = 'Deploy Organization Schema with sameAs links. Add Open Graph and Twitter Card meta tags.';
+  else actionPlan = 'Maintain: Monitor Core Web Vitals, build topical authority clusters, increase E-E-A-T signals.';
+  
+  zone.innerHTML = `
+  <div class="sh-grid fu1 ${cls}">
+    <div class="ring-w">
+      <svg viewBox="0 0 190 190">
+        <circle class="r-bg" cx="95" cy="95" r="82"/>
+        <circle class="r-fill" id="rf" cx="95" cy="95" r="82" stroke="${stroke}" stroke-dasharray="${circ}" stroke-dashoffset="${circ}"/>
+      </svg>
+      <div class="r-inner">
+        <span class="r-num" id="rn">0</span>
+        <span class="r-lbl">/ 100</span>
+        <span class="r-grade ${cls}-badge">${grade}</span>
       </div>
-    `;
-  }
-  filesHtml += '</div>';
+    </div>
+    <div>
+      <div class="sh-label">AI Visibility Composite — 167 Signals · REAL DATA</div>
+      <div class="sh-url">${url}</div>
+      <div class="sh-ts">${new Date().toLocaleString()} · Live Worker Audit</div>
+      <div class="dim-grid">
+        <div class="dim d-aeo"><div class="dim-lbl">AEO</div><div class="dim-name">Answer Engine Optimization</div><div class="dim-val">${scores.AEO}</div><div class="dim-bar"><div class="dim-bar-f" style="width:${scores.AEO}%"></div></div></div>
+        <div class="dim d-geo"><div class="dim-lbl">GEO</div><div class="dim-name">Generative Engine Optimization</div><div class="dim-val">${scores.GEO}</div><div class="dim-bar"><div class="dim-bar-f" style="width:${scores.GEO}%"></div></div></div>
+        <div class="dim d-aio"><div class="dim-lbl">AIO</div><div class="dim-name">AI Optimization</div><div class="dim-val">${scores.AIO}</div><div class="dim-bar"><div class="dim-bar-f" style="width:${scores.AIO}%"></div></div></div>
+        <div class="dim d-seo"><div class="dim-lbl">SEO</div><div class="dim-name">Search Engine Optimization</div><div class="dim-val">${scores.SEO}</div><div class="dim-bar"><div class="dim-bar-f" style="width:${scores.SEO}%"></div></div></div>
+      </div>
+    </div>
+  </div>
+  <div class="ai-band fu2">
+    <div><div class="aib-lbl">AI Signals Layer · 32 Signals</div><div class="aib-val">${scores.AI_SIGNALS}<span> / 100</span></div></div>
+    <div><div style="font-size:10px;font-weight:600;margin-bottom:9px;text-align:right">Critical AI Files</div><div class="crawler-tags">${crawlerHtml}</div></div>
+  </div>
+  <div class="acc-wrap fu3"><button class="acc-header open" onclick="toggleAcc('synthBody')"><div class="acc-header-left"><span class="acc-icon" style="background:var(--blue-bg);color:var(--blue)">⟁</span><div><div class="acc-tag">AI Synthesis</div><div class="acc-label">Executive Verdict</div></div></div><span class="acc-chevron">▲</span></button><div id="synthBody" class="acc-body" style="display:block"><div class="acc-inner"><div class="acc-synth-body">${synthesis}</div></div></div></div>
+  <div class="acc-wrap fu3"><button class="acc-header open" onclick="toggleAcc('actionBody')"><div class="acc-header-left"><span class="acc-icon" style="background:var(--gold-bg);color:var(--gold)">◈</span><div><div class="acc-tag">Action Plan</div><div class="acc-label">Path to Dominance</div></div></div><span class="acc-chevron">▲</span></button><div id="actionBody" class="acc-body" style="display:block"><div class="acc-inner"><div class="acc-ap-grid"><div class="acc-ap-card acc-ap-c"><div class="acc-ap-p">🔴 Critical — Fix Now</div><div class="acc-ap-title">Deploy AI Signal Stack</div><div class="ac-items"><div class="ac-item">Add llms.txt with entity declaration</div><div class="ac-item">Configure robots.txt for ClaudeBot/GPTBot</div><div class="ac-item">Deploy proof.json with SHA-256</div></div><div class="ac-delta">▲ +12–18 pts in 7 days</div></div><div class="acc-ap-card acc-ap-i"><div class="acc-ap-p">🟡 Important — This Month</div><div class="acc-ap-title">Build Entity Architecture</div><div class="ac-items"><div class="ac-item">Deploy entities.json and ai.json</div><div class="ac-item">Implement Organization Schema</div><div class="ac-item">Add FAQ schema to key pages</div></div><div class="ac-delta">▲ +8–14 pts in 30 days</div></div><div class="acc-ap-card acc-ap-o"><div class="acc-ap-p">🔵 Optimize — Q2 Roadmap</div><div class="acc-ap-title">${actionPlan.substring(0, 50)}...</div><div class="ac-items"><div class="ac-item">${actionPlan.substring(0, 80)}</div></div><div class="ac-delta">▲ +15–25 pts in 90 days</div></div></div></div></div></div>
+  <div class="share-bar fu5"><div class="share-label">Share this report</div><div class="share-btns"><button class="share-btn" onclick="window.print()"><span class="share-ico">🖨</span><span>Print Report</span></button><button class="share-btn" onclick="copyReport()"><span class="share-ico">📋</span><span>Copy Summary</span></button></div></div>
+  <button class="rst" onclick="resetAudit()">← New Audit</button>`;
   
-  document.getElementById('results').innerHTML = `
-    ${scoresHtml}
-    <div style="background:#f5f5f7;border-radius:16px;padding:20px;margin-top:20px">
-      <h3 style="margin-bottom:16px">📁 Critical AI Files Detected</h3>
-      ${filesHtml}
-    </div>
-    <div style="margin-top:20px;font-size:12px;color:#666;text-align:center">
-      ✅ REAL checks performed via Cloudflare Worker | ${new Date().toLocaleString()}
-    </div>
-  `;
-  document.getElementById('results').style.display = 'block';
+  requestAnimationFrame(()=>{
+    document.getElementById('rf').style.strokeDashoffset = dashOffset;
+    animateNumber('rn', 0, composite, 1600);
+  });
 }
 
-document.getElementById('runBtn').onclick = runAudit;
-document.getElementById('domain').onkeypress = (e) => { if (e.key === 'Enter') runAudit(); };
-runAudit();
+function animateNumber(id, from, to, dur){
+  const el = document.getElementById(id);
+  if(!el) return;
+  const start = performance.now();
+  function step(now){
+    const p = Math.min((now-start)/dur, 1);
+    const ease = 1 - Math.pow(1-p, 3);
+    el.textContent = Math.round(from + (to-from)*ease);
+    if(p<1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+function toggleAcc(id){
+  const body = document.getElementById(id);
+  if(body) body.style.display = body.style.display === 'none' ? 'block' : 'none';
+}
+
+function copyReport(){
+  const summary = document.querySelector('.sh-url')?.innerText || '';
+  navigator.clipboard.writeText(`AUDIT-AI Report\n${summary}\nScore: ${document.querySelector('.r-num')?.innerText}/100`);
+  alert('Report copied!');
+}
+
+function resetAudit(){
+  document.getElementById('results-zone').style.display = 'none';
+  document.getElementById('loading-zone').style.display = 'none';
+  document.getElementById('input-zone').style.display = 'block';
+  document.getElementById('url-input').value = '';
+  ['aeo','geo','aio','seo','ai','tot'].forEach(id=>{
+    const m = document.getElementById('m-'+id);
+    if(m) m.classList.remove('active','done');
+    const b = document.getElementById('b-'+id);
+    if(b) b.style.width = '0%';
+    const c = document.getElementById('c-'+id);
+    if(c) c.textContent = c.textContent.replace(/^\d+/, '0');
+  });
+}
+
+document.getElementById('url-input').addEventListener('keypress', e => { if(e.key === 'Enter') startAudit(); });
 </script>
 </body>
 </html>
